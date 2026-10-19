@@ -69,7 +69,10 @@ begin
   if not public.st_bildirim_yetki(p_sifre) then raise exception 'yetkisiz'; end if;
   return jsonb_build_object(
     'aboneler', coalesce((select jsonb_agg(jsonb_build_object('slug', a.slug, 'abone', a.veri)) from public.st_abone a), '[]'::jsonb),
-    'ozet', coalesce((select jsonb_object_agg(v.slug, v.veri -> 'bugun_ozet') from public.st_veri v), '{}'::jsonb));
+    'ozet', coalesce((select jsonb_object_agg(v.slug, v.veri -> 'bugun_ozet') from public.st_veri v), '{}'::jsonb),
+    'vapid', jsonb_build_object(
+      'acik', (select deger from public.st_ayar where ad = 'vapid_acik'),
+      'ozel', (select deger from public.st_ayar where ad = 'vapid_ozel')));
 end $$;
 
 create or replace function public.st_abone_dus(p_sifre text, p_uc text)
@@ -79,6 +82,20 @@ begin
   delete from public.st_abone where uc = p_uc;
   return true;
 end $$;
+
+-- Bildirim imza anahtarları: sitenin sunucu işlevi ilk çalıştığında kendisi üretir ve buraya bir kez yazar.
+-- Böylece hiçbir gizli anahtar elle taşınmaz. Açık anahtarı herkes okuyabilir (telefonun abone olması için gerekir).
+create or replace function public.st_vapid_kaydet(p_sifre text, p_acik text, p_ozel text)
+returns boolean language plpgsql security definer set search_path = '' as $$
+begin
+  if not public.st_bildirim_yetki(p_sifre) then raise exception 'yetkisiz'; end if;
+  insert into public.st_ayar (ad, deger) values ('vapid_acik', p_acik), ('vapid_ozel', p_ozel) on conflict (ad) do nothing;
+  return true;
+end $$;
+create or replace function public.st_vapid_acik()
+returns text language sql stable security definer set search_path = '' as $$
+  select deger from public.st_ayar where ad = 'vapid_acik'
+$$;
 
 -- Kurulum: şifrenin özetini saklar, 5 dakikada bir siteyi dürten zamanlayıcıyı kurar, deneme bildirimi yollar.
 create or replace function public.st_bildirim_kur(p_sifre text, p_adres text)
@@ -103,5 +120,9 @@ revoke all on function public.st_abone_liste(text) from public;
 revoke all on function public.st_abone_dus(text, text) from public;
 grant execute on function public.st_abone_liste(text) to anon, authenticated;
 grant execute on function public.st_abone_dus(text, text) to anon, authenticated;
+revoke all on function public.st_vapid_kaydet(text, text, text) from public;
+grant execute on function public.st_vapid_kaydet(text, text, text) to anon, authenticated;
+revoke all on function public.st_vapid_acik() from public;
+grant execute on function public.st_vapid_acik() to anon, authenticated;
 
 select 'sexy tangent tabloları hazır' as sonuc;

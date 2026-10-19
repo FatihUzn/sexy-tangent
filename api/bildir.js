@@ -1,13 +1,12 @@
 /* sexy tangent · anlık bildirim gönderici. Supabase'deki zamanlayıcı 5 dakikada bir çağırır (x-sifre başlığıyla).
    Her profile günde iki bildirim: sabah ve gün sonu (saatler profiller.js'te).
    Gizlilik: kilit ekranında okunur; sınav, ders, okul ya da bölüm adı hiçbir zaman yazmaz.
-   Ortam değişkenleri (Vercel → Settings → Environment Variables):
-     VAPID_OZEL      bildirim imzalama anahtarı (gizli)
-     BILDIRIM_SIFRE  zamanlayıcının kullandığı şifre (gizli) */
+   Tek ortam değişkeni (Vercel → Settings → Environment Variables):
+     BILDIRIM_SIFRE  zamanlayıcının kullandığı şifre (gizli, en az 24 karakter; Supabase kurulumundaki ile aynı)
+   İmza anahtarları (VAPID) ilk çağrıda burada üretilir ve Supabase'e bir kez yazılır: elle taşınan anahtar yok. */
 const webpush = require("web-push");
 const PR = require("../profiller.js");
 
-const VAPID_ACIK = "BHT0QWpoQhHqvLq8NHfAvAQPXpWX5PDKpsxuMgsrQLISLQV1-UZGhM_GZqoRdhIINq5JkfiqIxtLkJIIMjvWeGw";
 const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
 const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
 const SAAT_FARKI = 3;   // Türkiye, yaz-kış aynı
@@ -51,14 +50,19 @@ async function rpc(ad, govde) {
 
 module.exports = async (req, res) => {
   const yaz = (kod, o) => { res.statusCode = kod; res.setHeader("content-type", "application/json; charset=utf-8"); res.setHeader("cache-control", "no-store"); res.end(JSON.stringify(o)); };
-  const sifre = process.env.BILDIRIM_SIFRE, ozel = process.env.VAPID_OZEL;
-  if (!sifre || !ozel) return yaz(503, { hata: "ortam değişkenleri eksik" });
+  const sifre = process.env.BILDIRIM_SIFRE;
+  if (!sifre) return yaz(503, { hata: "BILDIRIM_SIFRE eksik" });
   if (req.headers["x-sifre"] !== sifre) return yaz(401, { hata: "yetkisiz" });
   try {
     let govde = req.body; if (typeof govde === "string") { try { govde = JSON.parse(govde); } catch (e) { govde = {}; } }
-    const veri = await rpc("st_abone_liste", { p_sifre: sifre });
+    let veri = await rpc("st_abone_liste", { p_sifre: sifre });
+    if (!veri.vapid || !veri.vapid.ozel) {
+      const k = webpush.generateVAPIDKeys();
+      await rpc("st_vapid_kaydet", { p_sifre: sifre, p_acik: k.publicKey, p_ozel: k.privateKey });
+      veri = await rpc("st_abone_liste", { p_sifre: sifre });   // aynı anda iki çağrı olduysa ilk yazılan geçerli
+    }
     const z = simdiTR(), ozet = veri.ozet || {};
-    webpush.setVapidDetails("https://" + (req.headers.host || "localhost"), VAPID_ACIK, ozel);
+    webpush.setVapidDetails("https://" + (req.headers.host || "localhost"), veri.vapid.acik, veri.vapid.ozel);
     let ok = 0, dusen = 0, mesaj = 0;
     for (const a of veri.aboneler || []) {
       const liste = govde && govde.deneme ? [{ title: "tangent", body: "Bildirim hattı çalışıyor.", tag: "deneme" }] : secim(a.slug, z, ozet[a.slug]);

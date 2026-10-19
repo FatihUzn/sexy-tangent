@@ -7,7 +7,6 @@
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
-  const VAPID = "BHT0QWpoQhHqvLq8NHfAvAQPXpWX5PDKpsxuMgsrQLISLQV1-UZGhM_GZqoRdhIINq5JkfiqIxtLkJIIMjvWeGw";
   const PR = window.Profiller, P = PR.P;
   const GUNLER = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
   const KISA = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
@@ -304,7 +303,11 @@
       }
       const izin = await Notification.requestPermission();
       if (izin !== "granted") { tost("İzin verilmedi. Ayarlar → Bildirimler'den açabilirsin."); return; }
-      a = a || await r.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(VAPID) });
+      if (!a) {
+        const { data: acik, error: ve } = await sb.rpc("st_vapid_acik");
+        if (ve || !acik) { tost("Bildirim hattı henüz kurulmadı. Fati'ye haber ver."); return; }
+        a = await r.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(acik) });
+      }
       const { error } = await sb.from("st_abone").upsert({ uc: a.endpoint, uid, slug, veri: a.toJSON(), guncel: new Date().toISOString() });
       if (error) throw error;
       tost("Bildirimler açık. Günde iki tane, o kadar."); bildirimDurum();
