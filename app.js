@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v3";
+  const SURUM = "st-v4";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -293,9 +293,21 @@
   }
 
   function kitapCiz() {
-    const k = $("kitaplar"); if (P[slug].tur !== "uni") return;
-    k.innerHTML = '<div class="kart"><b>Ders içeriklerin ve Storytel listen hazırlanıyor.</b><p class="ince">İçerikleri gönderince dersler burada, dinleme listen de altında olacak. Şimdilik her akşam 30 dakika okuma/dinleme bloğun var.</p></div>';
+    const k = $("kitaplar"), p = P[slug]; if (p.tur !== "uni") return;
+    V.kitap = V.kitap || {};
+    const l = p.kitaplar || [];
+    const biten = l.filter((x) => V.kitap[x[0]]).length;
+    k.innerHTML = '<p class="ince">Sırayla git. Storytel\'de bulamadığın olursa Fati\'ye söyle, yerine benzerini koyarız. ' + (l.length ? biten + "/" + l.length + " bitti." : "") + "</p>";
+    l.forEach((x, i) => {
+      const d = el("div", "kitap" + (V.kitap[x[0]] ? " bitti" : ""));
+      d.innerHTML = '<div class="kap"><span>' + (i + 1) + "</span></div><div><b>" + kac(x[0]) + "</b><small>" + kac(x[1]) + "</small><p>" + kac(x[2]) + "</p></div>";
+      const t = el("button", "tik" + (V.kitap[x[0]] ? " on" : ""), "✓"); t.setAttribute("aria-label", x[0] + " bitti mi");
+      t.onclick = () => { if (V.kitap[x[0]]) delete V.kitap[x[0]]; else { V.kitap[x[0]] = bugun(); tost("Bir kitap daha. Helal."); } kaydet(); kitapCiz(); };
+      d.appendChild(t); k.appendChild(d);
+    });
+    k.appendChild(el("div", "kart", '<b>Ders içeriklerin</b><p class="ince">Derslerini gönderince konu anlatımları burada olacak.</p>'));
   }
+
 
   /* ---------- bildirim ---------- */
   const standalone = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;

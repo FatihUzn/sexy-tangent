@@ -166,6 +166,14 @@
     samed: {
       ad: "Samed", tur: "uni", renk: "#5F7A3A", renk2: "#8EA866", desen: "zirve",
       etiket: "Yeniden inşa",
+      kitaplar: [
+        ["Atomik Alışkanlıklar", "James Clear", "Önce bu. Yeni alışkanlığı küçük adımlarla kalıcı yapmak: 06:00 ve sabah koşusu tam bunun konusu."],
+        ["Sabah Mucizesi", "Hal Elrod", "Sabahı güne hazırlık olarak kullanmak. Yer yer tekrar eder; 06:00 düzenine yakıt."],
+        ["Benim Canım Acımaz", "David Goggins", "Kendini sıfırdan inşa eden bir ultra koşucu. Sert dil. Ironman hedefi için en çok gaz veren."],
+        ["Koşmasaydım Yazamazdım", "Haruki Murakami", "Goggins'in tersi: sakin. Koşu, disiplin, kendinle yarışmak. Maraton haftasına iyi gider."],
+        ["İnsanın Anlam Arayışı", "Viktor Frankl", "Kısa ama ağır. İnsanı zor zamanda ayakta tutan şey: bir 'neden'."],
+        ["Dört Anlaşma", "Don Miguel Ruiz", "Bir oturuşta biter. Kendine ve başkalarına dört basit kural; iki ağır kitap arası nefes."]
+      ],
       sabah: 360, aksam: 1335, blokDk: 50, plan3: true,
       not: "1. aşama: sabah rutini. 06:00 kalkış ve sabah koşusu oturunca İngilizce ve fitness eklenecek. Maratona kadar koşular hafif.",
       sabit: [

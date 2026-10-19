@@ -144,7 +144,11 @@ input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(
 .raf span{font-size:13px;color:var(--kakao2)}
 .raf.yakinda{opacity:.55;box-shadow:none;border-style:dashed}
 .kitap{display:flex;gap:14px;padding:14px;border-radius:var(--r);background:var(--kart);border:1px solid var(--cizgi);margin-bottom:10px}
-.kitap .kap{width:52px;height:72px;border-radius:8px;flex:none;background:linear-gradient(160deg,var(--acc2),var(--acc))}
+.kitap{align-items:center}
+.kitap .kap{width:44px;height:62px;border-radius:8px;flex:none;background:linear-gradient(160deg,var(--acc2),var(--acc));display:grid;place-items:center;color:#fff;font:italic 400 22px Fraunces,Georgia,serif}
+.kitap>div:nth-child(2){flex:1;min-width:0}
+.kitap.bitti{opacity:.6}
+.kitap.bitti b{text-decoration:line-through}
 .kitap b{display:block}
 .kitap small{color:var(--soluk)}
 .kitap p{margin:6px 0 0;font-size:14px;color:var(--kakao2)}
