@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v2";
+  const SURUM = "st-v3";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -195,6 +195,7 @@
     for (let i = 0; i < 7; i++) { const gg = gunEkle(hb, i), bl = PR.gunluk(slug, gg).filter((b) => b.say); top += bl.length; yap += bl.filter((b) => isaretli(gg, b)).length; }
     $("haftaIlerleme").innerHTML = top ? "<span>Bu hafta</span><div class=\"cubuk\"><i style=\"width:" + Math.round(yap / top * 100) + "%\"></i></div><b>" + yap + "/" + top + "</b>" : "";
 
+    plan3Ciz(g);
     $("profilNot").hidden = !p.not; $("profilNot").textContent = p.not || "";
 
     const ol = $("bloklar"); ol.innerHTML = "";
@@ -212,6 +213,22 @@
     if (!l.length) ol.appendChild(el("li", "blok pasif", '<span class="ad"><b>Bugün için plan yok.</b></span>'));
   }
   function sure(d) { return d < 60 ? d + " dk" : Math.floor(d / 60) + " sa" + (d % 60 ? " " + (d % 60) + " dk" : ""); }
+
+  /* Günün 3 işi: sabah yazılır, gün içinde işaretlenir */
+  function plan3Ciz(g) {
+    const k = $("plan3"); if (!P[slug].plan3) { k.hidden = true; return; }
+    k.hidden = false; V.plan = V.plan || {};
+    const l = V.plan[g] || [{ t: "", ok: 0 }, { t: "", ok: 0 }, { t: "", ok: 0 }];
+    k.innerHTML = '<span class="etk">Bugünün 3 işi</span>';
+    l.forEach((x, i) => {
+      const r = el("label"), t = el("button", "tik" + (x.ok ? " on" : ""), "✓"), inp = el("input");
+      t.type = "button"; t.setAttribute("aria-label", (i + 1) + ". iş bitti mi");
+      inp.type = "text"; inp.value = x.t; inp.placeholder = (i + 1) + ". iş"; inp.maxLength = 80;
+      t.onclick = () => { if (!l[i].t) return; l[i].ok = l[i].ok ? 0 : 1; V.plan[g] = l; kaydet(); plan3Ciz(g); if (l.every((y) => y.ok)) tost("Üçü de tamam. Bugün kazandın."); };
+      inp.onchange = () => { l[i].t = inp.value.trim(); V.plan[g] = l; kaydet(); };
+      r.append(t, inp); k.appendChild(r);
+    });
+  }
 
   function haftaCiz() {
     const g = bugun(), hb = haftaBasi(g), k = $("hafta"); k.innerHTML = "";

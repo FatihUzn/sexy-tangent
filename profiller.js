@@ -166,10 +166,21 @@
     samed: {
       ad: "Samed", tur: "uni", renk: "#5F7A3A", renk2: "#8EA866", desen: "zirve",
       etiket: "Yeniden inşa",
-      sabah: 480, aksam: 1305, blokDk: 50,
-      not: "Ders programın ve ders içeriklerin gelince burası dolacak.",
-      sabit: [],
-      mini: { g: her, s: "21:00", dk: 30, ad: "Okuma / dinleme · 30 dk" },
+      sabah: 360, aksam: 1335, blokDk: 50, plan3: true,
+      not: "1. aşama: sabah rutini. 06:00 kalkış ve sabah koşusu oturunca İngilizce ve fitness eklenecek. Maratona kadar koşular hafif.",
+      sabit: [
+        { g: [1], s: "09:40", b: "14:00", ad: "Okul", tur: "ders" },
+        { g: [2], s: "12:00", b: "14:00", ad: "Okul", tur: "ders" },
+        { g: [3], s: "12:00", b: "16:30", ad: "Okul", tur: "ders" },
+        { g: [4], s: "09:40", b: "16:00", ad: "Okul", tur: "ders" },
+        { g: her, s: "22:30", b: "23:00", ad: "Ekran kapalı · uyku", tur: "uyku" }
+      ],
+      rutin: [
+        { g: her, s: "06:00", dk: 10, ad: "Kalk · bir bardak su" },
+        { g: her, s: "06:10", dk: 30, ad: "Koşu · 30 dk hafif" },
+        { g: her, s: "07:45", dk: 15, ad: "Günü planla · 3 iş" },
+        { g: her, s: "21:00", dk: 30, ad: "Okuma / dinleme · 30 dk" }
+      ],
       pencere: {},
       donus: () => [],
       oku: [],
@@ -182,11 +193,12 @@
         "Disiplin, motivasyonun bittiği yerde başlar."
       ],
       bSabah: [
-        "Şampiyon, bugün kimi inşa ediyoruz?",
-        "Kalk, aynadaki adam bekliyor.",
-        "Yeni gün, yeni tuğla.",
-        "Bugün kendine bir iyilik yap: planı uygula.",
-        "Zirve uzakta değil, sadece yukarıda."
+        "06:00. Ayakkabılar kapıda, sen de kapıda ol.",
+        "Kalk şampiyon, yol seni bekliyor.",
+        "Bir bardak su, 30 dakika yol. Gerisi kolay.",
+        "Herkes uyurken başlayan kazanır.",
+        "Yeni gün, yeni tuğla. İlki koşu.",
+        "Alarmı kapatan el, ayakkabıyı da bağlar."
       ],
       bAksam: [
         "Gün bitti. Bugün kimden daha iyiydin? Dünkü kendinden.",
@@ -207,6 +219,8 @@
 
     const denemeGunu = p.deneme && p.deneme.g === g && h >= p.deneme.ilk && (h - p.deneme.ilk) % p.deneme.her === 0;
     if (denemeGunu) liste.push({ s: p.deneme.s, b: p.deneme.b, ad: p.deneme.ad, tur: "deneme", say: true });
+
+    for (const r of (p.rutin || [])) if (r.g.includes(g)) liste.push({ s: r.s, b: saat(dk(r.s) + r.dk), ad: r.ad, tur: "mini", say: true });
 
     if (p.mini && p.mini.g.includes(g)) {
       const s = (g === 6 && p.mini.gun6) || (g === 0 && p.mini.gun0) || p.mini.s;

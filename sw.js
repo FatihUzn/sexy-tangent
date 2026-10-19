@@ -1,5 +1,5 @@
 /* sexy tangent · servis çalışanı: kabuk önbellekte, ders sayfaları açıldıkça önbelleğe girer; bildirim gösterir. */
-const SURUM = "st-v2";
+const SURUM = "st-v3";
 const KABUK = ["./", "index.html", "styles.css", "app.js", "profiller.js", "lib/supabase.js", "fonts/fonts.css",
   "fonts/inter-latin-wght-normal.woff2", "fonts/fraunces-latin-opsz-italic.woff2", "manifest.webmanifest",
   "icons/ikon-192.png", "icons/desen-bogaz.svg", "icons/desen-kat.svg", "icons/desen-galata.svg", "icons/desen-zirve.svg"];
