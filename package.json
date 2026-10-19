@@ -1,0 +1,7 @@
+{
+  "name": "sexy-tangent",
+  "private": true,
+  "description": "Statik site + tek sunucu işlevi (api/bildir.js). Derleme adımı yok.",
+  "scripts": { "test": "node araclar/test.js" },
+  "dependencies": { "web-push": "^3.6.7" }
+}

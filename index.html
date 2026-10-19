@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>tangent</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#FBF6EF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="tangent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/ikon-192.png" type="image/png">
+<link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="desen" aria-hidden="true"></div>
+
+<!-- ============ GİRİŞ: profil seç ============ -->
+<main id="giris" class="ekran" hidden>
+  <header class="marka">
+    <div class="logo" aria-hidden="true"><span></span></div>
+    <h1><em>sexy</em> tangent</h1>
+    <p>Kim geliyor?</p>
+  </header>
+  <div class="profiller" id="profiller"></div>
+
+  <div class="sayfa-alt" id="sifreKart" hidden>
+    <form class="kart giris-kart" id="girisForm" autocomplete="on">
+      <button type="button" class="kapat" id="girisKapat" aria-label="Kapat">×</button>
+      <div class="avatar buyuk" id="girisAvatar"></div>
+      <h2 id="girisAd"></h2>
+      <input type="text" name="username" id="girisKullanici" autocomplete="username" hidden>
+      <input type="password" id="girisSifre" autocomplete="current-password" placeholder="Şifren" aria-label="Şifre" required minlength="4">
+      <p class="hata" id="girisHata" hidden></p>
+      <button class="btn" id="girisBtn">Gir</button>
+    </form>
+  </div>
+</main>
+
+<!-- ============ İLK GİRİŞ: şifreni değiştir ============ -->
+<main id="yeniSifre" class="ekran" hidden>
+  <form class="kart tek" id="sifreForm">
+    <div class="avatar buyuk" id="ysAvatar"></div>
+    <h2>Önce kendi şifreni koy</h2>
+    <p class="ince">Sana verilen şifre geçici. En az 6 karakter; kimseyle paylaşma.</p>
+    <input type="password" id="ys1" autocomplete="new-password" placeholder="Yeni şifre" minlength="6" required>
+    <input type="password" id="ys2" autocomplete="new-password" placeholder="Bir daha" minlength="6" required>
+    <p class="hata" id="ysHata" hidden></p>
+    <button class="btn">Kaydet</button>
+  </form>
+</main>
+
+<!-- ============ UYGULAMA ============ -->
+<main id="uyg" class="ekran" hidden>
+  <header class="ust">
+    <div>
+      <p class="selam" id="selam"></p>
+      <p class="kalan" id="kalan"></p>
+    </div>
+    <button class="avatar" id="avatarBtn" aria-label="Ayarlar"></button>
+  </header>
+
+  <section class="sekme on" id="s-bugun">
+    <figure class="soz" id="soz"><blockquote id="sozMetin"></blockquote></figure>
+    <div class="kart simdi" id="simdi"></div>
+    <div class="ilerleme" id="haftaIlerleme"></div>
+    <p class="not" id="profilNot" hidden></p>
+    <ol class="bloklar" id="bloklar"></ol>
+  </section>
+
+  <section class="sekme" id="s-hafta">
+    <h2 class="baslik">Bu hafta</h2>
+    <div class="hafta" id="hafta"></div>
+  </section>
+
+  <section class="sekme" id="s-net">
+    <div class="kart hedef" id="hedefKart"></div>
+    <details class="kart ekle" id="denemeEkle">
+      <summary>+ Deneme ekle</summary>
+      <form id="denemeForm"></form>
+    </details>
+    <div id="denemeler"></div>
+  </section>
+
+  <section class="sekme" id="s-oku">
+    <h2 class="baslik">Oku</h2>
+    <p class="ince">Her parça tek oturumda biter, sonunda kısa bir quiz var.</p>
+    <div class="raflar" id="raflar"></div>
+  </section>
+
+  <section class="sekme" id="s-kitap">
+    <h2 class="baslik">Kitaplık</h2>
+    <div id="kitaplar"></div>
+  </section>
+
+  <section class="sekme" id="s-ayar">
+    <h2 class="baslik">Ayarlar</h2>
+    <div class="kart liste">
+      <button class="satir" id="bildirimBtn"><span>Bildirimler</span><b id="bildirimDurum">Kapalı</b></button>
+      <p class="ince" id="bildirimNot" hidden></p>
+      <button class="satir" id="sifreBtn"><span>Şifremi değiştir</span><b>›</b></button>
+      <button class="satir" id="cikisBtn"><span>Profil değiştir / çıkış</span><b>›</b></button>
+    </div>
+    <p class="ince orta" id="surum"></p>
+  </section>
+
+  <nav class="alt" id="altNav"></nav>
+</main>
+
+<div class="tost" id="tost" role="status" aria-live="polite"></div>
+
+<script src="lib/supabase.js"></script>
+<script src="profiller.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
