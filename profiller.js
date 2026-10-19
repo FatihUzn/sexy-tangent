@@ -101,7 +101,7 @@
       izin: [0],
       deneme: { g: 6, s: "10:00", b: "12:45", her: 2, ilk: 4, ad: "Deneme + analiz" },
       donus: tytDonus,
-      oku: ["turkce", "sosyal", "fizik", "kimya", "biyo"],
+      oku: ["mat", "turkce", "geo", "sosyal", "fizik", "kimya", "biyo"],
       cumleler: [
         "Mesai bitti, asıl vardiya şimdi başlıyor.",
         "Her gün bir kat yukarı. Bu sefer yukarı çıkan sensin.",
@@ -138,7 +138,7 @@
       mini: { g: her, s: "20:05", dk: 15, ad: "Paragraf · 15 dk", gun6: "10:35", gun0: "10:35" },
       pencere: { 1: [["20:30", 2]], 2: [["20:30", 2]], 3: [["20:30", 2]], 4: [["20:30", 2]], 5: [["20:30", 2]], 6: [["11:00", 2]], 0: [["11:00", 2]] },
       donus: tytDonus,
-      oku: ["turkce", "sosyal", "fizik", "kimya", "biyo"],
+      oku: ["mat", "turkce", "geo", "sosyal", "fizik", "kimya", "biyo"],
       cumleler: [
         "Küçük adım da adımdır. Bugünkü not bitti mi? O zaman kazandın.",
         "Zor geldiyse doğru yerdesin. Bırakma, sadece yavaşla.",

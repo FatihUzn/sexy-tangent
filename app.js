@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v1";
+  const SURUM = "st-v2";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -11,6 +11,7 @@
   const GUNLER = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
   const KISA = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
   const RAF = {
+    mat: ["Matematik", "Sayılardan olasılığa, 48 parça"], geo: ["Geometri", "Açıdan çembere, TYT kısmı"],
     turkce: ["Türkçe", "Paragraf, anlam, dil bilgisi"], sosyal: ["Sosyal", "Tarih, coğrafya, felsefe, din"],
     fizik: ["Fizik", "Hareketten modern fiziğe"], kimya: ["Kimya", "Atomdan organiğe"], biyo: ["Biyoloji", "Hücreden ekolojiye"]
   };
@@ -272,7 +273,6 @@
   function okuCiz() {
     const p = P[slug], k = $("raflar"); k.innerHTML = "";
     for (const r of p.oku) { const a = el("a", "raf", "<b>" + RAF[r][0] + "</b><span>" + RAF[r][1] + "</span>"); a.href = "oku/" + r + ".html"; k.appendChild(a); }
-    if (p.tur !== "uni" && slug !== "salih") k.appendChild(el("div", "raf yakinda", "<b>Matematik</b><span>TYT temel matematik rafı yazılıyor.</span>"));
   }
 
   function kitapCiz() {
