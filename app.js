@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v7";
+  const SURUM = "st-v8";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -59,13 +59,13 @@
     const p = P[s], r = document.documentElement.style;
     r.setProperty("--desen", "url(icons/desen-" + (p ? p.desen : "bogaz") + ".svg)");
   }
-  /* Görünüm: oto (telefona uyar) · fildisi · zumrut · lacivert. Telefonda saklanır, ders sayfaları da okur. */
+  /* Görünüm: oto (telefona uyar) · adacayi · zumrut · lacivert. Telefonda saklanır, ders sayfaları da okur. */
   const KOYU = window.matchMedia("(prefers-color-scheme: dark)");
-  function gorunum() { let g = "oto"; try { g = localStorage.getItem("st-gorunum") || "oto"; } catch (e) {} return g; }
+  function gorunum() { let g = "oto"; try { g = localStorage.getItem("st-gorunum") || "oto"; } catch (e) {} return g === "fildisi" ? "adacayi" : g; }
   function gorunumUygula() {
-    const g = gorunum(), t = g === "oto" ? (KOYU.matches ? "zumrut" : "fildisi") : g;
+    const g = gorunum(), t = g === "oto" ? (KOYU.matches ? "zumrut" : "adacayi") : g;
     document.documentElement.dataset.tema = t;
-    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = { fildisi: "#F6F2EA", zumrut: "#0D1F1A", lacivert: "#0B1424" }[t];
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = { adacayi: "#EEF2EE", zumrut: "#0D1F1A", lacivert: "#0B1424" }[t];
     for (const b of document.querySelectorAll(".secim button")) b.classList.toggle("on", b.dataset.g === g);
   }
   KOYU.addEventListener && KOYU.addEventListener("change", gorunumUygula);
