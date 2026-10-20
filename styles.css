@@ -243,8 +243,88 @@ input[type=password],input[type=text],input[type=number],input[type=date],select
 .tost{background:var(--kakao);color:var(--zemin)}
 .sayfa-alt{background:rgba(0,0,0,.35)}
 .net-satir.acik .n{color:#C0564B}
-.secim{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:6px 18px 14px}
+.secim{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 18px 14px}
 .secim button{border:1px solid var(--cizgi);background:var(--zemin);color:var(--kakao2);border-radius:12px;padding:9px 4px;font-size:12.5px}
 .secim button.on{border-color:var(--acc);color:var(--acc);font-weight:600}
 .secim-ad{padding:12px 18px 4px;font-size:16px}
 .tek .gec{border:0;background:none;color:var(--soluk);padding:6px;font-size:14px}
+
+/* =========================================================
+   TEMA v3 · iki konsept.
+   mermer: buz mavisi/nane zemin, çam yeşili kartlar, erik moru vurgu (gündüz; Fati'nin gönderdiği mermer görselinden)
+   yol:   Gece Yolu — asfalt, sodyum lambası, şerit sarısı, 16 plakalı kartlar (gece)
+   ========================================================= */
+html[data-tema="mermer"]{
+  --zemin:#1B1F4B;--zemin2:rgba(255,255,255,.5);--kart:rgba(255,255,255,.74);--kart2:rgba(255,255,255,.28);--kartc:rgba(255,255,255,.45);
+  --cizgi:rgba(255,255,255,.55);--kakao:#24203F;--kakao2:#4A4466;--soluk:#7C7596;--acc:#D9674F;--acc2:#F0A07F;--sut:#D9674F;
+  --btnyazi:#FFFFFF;--nav:rgba(255,255,255,.72);--desenop:.07;--beyaz:#FFF6EE;color-scheme:light;
+  --golge:0 1px 2px rgba(36,32,63,.06),0 18px 40px -22px rgba(36,32,63,.45);
+}
+html[data-tema="mermer"] body::before{background:linear-gradient(180deg,#1B1F4B 0%,#3D3270 26%,#8A4F7D 50%,#E0806A 76%,#F7C9A2 100%)}
+html[data-tema="mermer"] .desen{background:#fff}
+html[data-tema="mermer"] .kart,html[data-tema="mermer"] .blok,html[data-tema="mermer"] .gun,html[data-tema="mermer"] .raf,html[data-tema="mermer"] .deneme,html[data-tema="mermer"] .kitap{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+html[data-tema="mermer"] .blok.pasif{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.4)}
+html[data-tema="mermer"] .blok.pasif .ad b,html[data-tema="mermer"] .blok.pasif .sa,html[data-tema="mermer"] .blok.pasif small{color:var(--beyaz)}
+html[data-tema="mermer"] .marka h1,html[data-tema="mermer"] .marka h1 em,html[data-tema="mermer"] .selam,html[data-tema="mermer"] .selam em,html[data-tema="mermer"] .baslik,
+html[data-tema="mermer"] .soz blockquote,html[data-tema="mermer"] .ilerleme,html[data-tema="mermer"] .kalan,html[data-tema="mermer"] .kalan b,
+html[data-tema="mermer"] #s-oku>.ince,html[data-tema="mermer"] #s-kitap .ince:first-child,html[data-tema="mermer"] .profil span,html[data-tema="mermer"] .tek .gec,html[data-tema="mermer"] .orta{color:var(--beyaz)}
+html[data-tema="mermer"] .marka>p,html[data-tema="mermer"] .marka h1 small{color:rgba(255,246,238,.72)}
+html[data-tema="mermer"] .soz{border-left-color:#FFD2B8}
+html[data-tema="mermer"] .ilerleme .cubuk{background:rgba(255,255,255,.3)}
+html[data-tema="mermer"] .ilerleme .cubuk i{background:#FFF6EE}
+html[data-tema="mermer"] .avatar{border-color:var(--beyaz);color:var(--beyaz)}
+html[data-tema="mermer"] .profil .kutu{background:linear-gradient(160deg,rgba(255,255,255,.3),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 24px 40px -26px rgba(20,16,50,.7)}
+html[data-tema="mermer"] .profil .kutu::after{background:#fff;opacity:.38}
+html[data-tema="mermer"] .profil .kutu b{color:#fff}
+html[data-tema="mermer"] .btn{background:linear-gradient(90deg,#E07A5F,#F0A07F);color:#fff}
+html[data-tema="mermer"] .logo{border-color:rgba(255,246,238,.7)}html[data-tema="mermer"] .logo::before{background:#E07A5F}html[data-tema="mermer"] .logo span{background:#FFF6EE}
+html[data-tema="mermer"] .kitap .kap{background:linear-gradient(160deg,#8A4F7D,#3D3270);color:#FFD2B8;border:0}
+
+html[data-tema="yol"]{
+  --zemin:#111214;--zemin2:#1C1D20;--kart:#18191C;--kart2:#25262A;--kartc:#33343A;--cizgi:#2A2B2F;
+  --kakao:#F1EEE6;--kakao2:#CFCBC0;--soluk:#8B877D;--acc:#F2C230;--acc2:#FFD966;--sut:#F2C230;
+  --btnyazi:#111214;--nav:rgba(24,25,28,.92);--desenop:0;color-scheme:dark;
+  --golge:0 1px 0 rgba(255,255,255,.03) inset,0 20px 40px -24px rgba(0,0,0,.9);
+}
+html[data-tema="yol"] body::before{background:radial-gradient(700px 420px at 85% -5%,rgba(255,170,60,.22),transparent 65%),radial-gradient(600px 400px at -10% 100%,rgba(242,194,48,.08),transparent 60%),#111214}
+html[data-tema="yol"] body::after{content:"";position:fixed;left:50%;top:0;bottom:0;width:6px;margin-left:-3px;z-index:-1;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(242,194,48,.10) 0 46px,transparent 46px 92px)}
+html[data-tema="yol"] .profil .kutu{background:linear-gradient(170deg,#25262A,#141518);border:1px solid #33343A;border-radius:16px;box-shadow:0 24px 40px -24px rgba(0,0,0,.9)}
+html[data-tema="yol"] .profil .kutu::after{background:#F2C230;opacity:.18}
+html[data-tema="yol"] .profil .kutu b{color:#F2C230;font:800 46px/1 Inter,system-ui,sans-serif;letter-spacing:-.02em}
+html[data-tema="yol"] .profil .kutu::before{content:"16";position:absolute;inset:auto;right:12px;top:10px;font:700 12px ui-monospace,Menlo,monospace;color:#111214;background:#F2C230;padding:2px 6px;border-radius:5px;z-index:2}
+html[data-tema="yol"] .simdi{border-top:2px dashed #F2C230}
+html[data-tema="yol"] .soz{border-left:3px solid #F2C230}
+html[data-tema="yol"] .btn{background:#F2C230;color:#111214;font-weight:800;letter-spacing:.05em;text-transform:uppercase;font-size:14px}
+html[data-tema="yol"] .avatar{font:800 20px/40px Inter,system-ui,sans-serif}
+html[data-tema="yol"] .kitap .kap{background:#F2C230;color:#111214;font:800 20px Inter,system-ui,sans-serif;border:0}
+html[data-tema="yol"] .logo::before{background:#F2C230}
+
+/* Mermer: son katman */
+html[data-tema="mermer"]{--zemin:#E6F2F3;--zemin2:#D5E7EA;--kart:rgba(255,255,255,.8);--cizgi:rgba(39,84,85,.16);--kakao:#0E2B29;--kakao2:#2F4D4C;--soluk:#5B7B8A;--acc:#9B2F9C;--acc2:#61598A;--sut:#9B2F9C;--nav:rgba(255,255,255,.82)}
+html[data-tema="mermer"] body::before{background:
+ radial-gradient(60% 40% at 105% 8%,rgba(93,44,123,.30),transparent 70%),
+ radial-gradient(55% 35% at -10% 35%,rgba(9,47,44,.30),transparent 70%),
+ radial-gradient(50% 30% at 110% 70%,rgba(39,84,85,.28),transparent 70%),
+ radial-gradient(45% 30% at 30% 100%,rgba(155,47,156,.16),transparent 70%),
+ linear-gradient(180deg,#D7EEF1,#EAF6F7 50%,#DDEDF0)}
+html[data-tema="mermer"] .desen{background:#275455;opacity:.06}
+html[data-tema="mermer"] .marka h1,html[data-tema="mermer"] .selam,html[data-tema="mermer"] .baslik,html[data-tema="mermer"] .soz blockquote,html[data-tema="mermer"] .ilerleme,html[data-tema="mermer"] .kalan,html[data-tema="mermer"] .profil span,html[data-tema="mermer"] .orta{color:#0E2B29}
+html[data-tema="mermer"] .marka h1 em,html[data-tema="mermer"] .selam em,html[data-tema="mermer"] .kalan b{color:#9B2F9C}
+html[data-tema="mermer"] .marka>p,html[data-tema="mermer"] .marka h1 small{color:#5B7B8A}
+html[data-tema="mermer"] .soz{border-left-color:#9B2F9C}
+html[data-tema="mermer"] .ilerleme .cubuk{background:rgba(39,84,85,.14)}html[data-tema="mermer"] .ilerleme .cubuk i,html[data-tema="mermer"] .simdi .cubuk i{background:linear-gradient(90deg,#61598A,#9B2F9C)}
+html[data-tema="mermer"] .avatar{border-color:#9B2F9C;color:#9B2F9C}
+html[data-tema="mermer"] .profil .kutu{background:radial-gradient(90% 70% at 100% 0%,rgba(155,47,156,.55),transparent 60%),linear-gradient(160deg,#275455,#092F2C);border:1px solid rgba(255,255,255,.25)}
+html[data-tema="mermer"] .profil .kutu::after{background:#B1E6ED;opacity:.32}html[data-tema="mermer"] .profil .kutu b{color:#EAF8FA}
+html[data-tema="mermer"] .btn{background:linear-gradient(100deg,#61598A,#9B2F9C)}
+html[data-tema="mermer"] .logo{border-color:#275455}html[data-tema="mermer"] .logo::before{background:#9B2F9C}html[data-tema="mermer"] .logo span{background:#0E2B29}
+html[data-tema="mermer"] .blok.pasif{background:rgba(255,255,255,.35);border-color:rgba(39,84,85,.25)}
+html[data-tema="mermer"] .blok.pasif .ad b,html[data-tema="mermer"] .blok.pasif .sa,html[data-tema="mermer"] .blok.pasif small{color:#2F4D4C}
+html[data-tema="mermer"] .simdi{border-top:1px solid #9B2F9C}html[data-tema="mermer"] .simdi .etk{color:#9B2F9C}
+html[data-tema="mermer"] .tik.on{background:#9B2F9C;border-color:#9B2F9C}
+html[data-tema="mermer"]{color-scheme:light;--beyaz:#0E2B29;--btnyazi:#FFFFFF}
+html[data-tema="mermer"] #s-oku>.ince,html[data-tema="mermer"] #s-kitap .ince:first-child,html[data-tema="mermer"] .tek .gec,html[data-tema="mermer"] .tanitim .gec{color:#5B7B8A}
+html[data-tema="mermer"] .kitap .kap{background:linear-gradient(160deg,#275455,#092F2C);color:#EAF8FA;border:0}
+html[data-tema="mermer"] .secim button{background:rgba(255,255,255,.6)}
+html[data-tema="mermer"] .tost{background:#0E2B29;color:#EAF8FA}
+html[data-tema="yol"] .secim button{background:transparent}

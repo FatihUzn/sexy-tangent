@@ -5,7 +5,7 @@
 <title>Arşiv</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#EEF2EE">
+<meta name="theme-color" content="#E6F2F3">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="icon" href="/icons/ikon-192.png" type="image/png">
 <script>document.documentElement.setAttribute("data-theme","light")</script>
@@ -214,16 +214,15 @@ html,[data-theme="light"] body{background:#FFFFFF}
 [data-theme="light"] a{text-decoration-color:rgba(40,74,126,.35)}
 </style>
 <style id="st-tema">
-:root[data-theme="light"]{--bg:#EEF2EE;--bg2:#E1E8E2;--fg:#1C3A33;--strong:#10302A;--muted:#71857C;--line:#D7E0D8;--lav:#8A6E3C;--lav-soft:rgba(168,138,85,.10);--mint:#A88A55;--mint-soft:#E6EDE6;--paper:#FBFCFA}
-:root[data-theme="light"][data-st="zumrut"]{--bg:#0D1F1A;--bg2:#163029;--fg:#E9E3D6;--strong:#F6F0E3;--muted:#8FA197;--line:#264139;--lav:#D9C29B;--lav-soft:rgba(217,194,155,.10);--mint:#ECDBBC;--mint-soft:#163029;--paper:#122822;color-scheme:dark}
-:root[data-theme="light"][data-st="lacivert"]{--bg:#0B1424;--bg2:#15223A;--fg:#E6E0D2;--strong:#F4EEE1;--muted:#8892A4;--line:#24324A;--lav:#D3B07A;--lav-soft:rgba(188,151,89,.11);--mint:#DDBE88;--mint-soft:#15223A;--paper:#101C30;color-scheme:dark}
+:root[data-theme="light"]{--bg:#EAF5F6;--bg2:#DCECEE;--fg:#173634;--strong:#0E2B29;--muted:#5B7B8A;--line:#D2E4E6;--lav:#9B2F9C;--lav-soft:rgba(155,47,156,.08);--mint:#275455;--mint-soft:#E0EEEF;--paper:#FFFFFF}
+:root[data-theme="light"][data-st="yol"]{--bg:#111214;--bg2:#1C1D20;--fg:#E9E6DE;--strong:#F6F3EC;--muted:#8B877D;--line:#2A2B2F;--lav:#F2C230;--lav-soft:rgba(242,194,48,.10);--mint:#FFD966;--mint-soft:#1C1D20;--paper:#18191C;color-scheme:dark}
 html,body{background:var(--bg)!important}
-
+:root:not([data-st]) body{background:radial-gradient(60% 300px at 105% 0,rgba(93,44,123,.18),transparent 70%),radial-gradient(55% 260px at -10% 0,rgba(9,47,44,.16),transparent 70%),#EAF5F6!important}
 [data-theme="light"] .defbox .in,[data-theme="light"] a.file:hover{background:var(--paper)}
 [data-theme="light"] .gate{background:color-mix(in srgb,var(--bg) 97%,transparent)}
-[data-st] [data-theme="light"] .btn,[data-st] .btn{color:var(--bg)}
+[data-st] .btn{color:var(--bg)}
 </style>
-<script>try{var g=localStorage.getItem("st-gorunum")||"oto",t=g==="oto"?(matchMedia("(prefers-color-scheme: dark)").matches?"zumrut":"adacayi"):g;if(t==="zumrut"||t==="lacivert")document.documentElement.setAttribute("data-st",t)}catch(e){}</script>
+<script>try{var g=localStorage.getItem("st-gorunum")||"oto",t=(g==="mermer"||g==="yol")?g:(matchMedia("(prefers-color-scheme: dark)").matches?"yol":"mermer");if(t==="yol")document.documentElement.setAttribute("data-st","yol")}catch(e){}</script>
 </head>
 <body>
 
