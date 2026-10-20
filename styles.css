@@ -328,3 +328,37 @@ html[data-tema="mermer"] .kitap .kap{background:linear-gradient(160deg,#275455,#
 html[data-tema="mermer"] .secim button{background:rgba(255,255,255,.6)}
 html[data-tema="mermer"] .tost{background:#0E2B29;color:#EAF8FA}
 html[data-tema="yol"] .secim button{background:transparent}
+
+/* ---------- spor ---------- */
+.gunsec{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px}
+.gunsec button{border:1px solid var(--cizgi);background:var(--kart);color:var(--kakao2);border-radius:12px;padding:9px 0 7px;font-size:13px;font-weight:600;position:relative}
+.gunsec button i{display:block;width:5px;height:5px;border-radius:50%;background:var(--acc);margin:4px auto 0}
+.gunsec button.on{background:var(--acc);border-color:var(--acc);color:var(--btnyazi,#fff)}
+.gunsec button.on i{background:var(--btnyazi,#fff)}
+.hareket{background:var(--kart);border:1px solid var(--cizgi);border-radius:16px;margin-bottom:8px;overflow:hidden}
+.hareket .hb{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px;cursor:pointer}
+.hareket .hb b{display:block;font-weight:600}
+.hareket .hb small{color:var(--soluk);font-size:12.5px}
+.hareket .kg{text-align:right;flex:none}
+.hareket .kg strong{display:block;font:700 24px/1 Inter,system-ui,sans-serif;color:var(--acc);letter-spacing:-.02em}
+.hareket .kg strong span{font-size:13px;font-weight:600;color:var(--soluk)}
+.hareket .kg em{font-style:normal;font-weight:600;margin-right:4px}.hareket .kg em.up{color:#2E9E62}.hareket .kg em.dn{color:#C0564B}
+.hareket.acik{border-color:var(--acc)}
+.hform{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;padding:0 14px 12px;align-items:end}
+.hform label{font-size:12px;color:var(--soluk);display:grid;gap:4px}
+.hform input{padding:11px 12px!important;font-size:16px}
+.hform .btn{padding:12px 16px;width:auto}
+.gecmis{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}
+.gecmis span{font-size:12px;color:var(--kakao2);background:var(--zemin2);border-radius:999px;padding:4px 10px}
+.harac{display:flex;gap:6px;padding:0 14px 12px}
+.harac button{flex:1;border:1px solid var(--cizgi);background:transparent;color:var(--kakao2);border-radius:10px;padding:8px 4px;font-size:12.5px}
+.hekle{display:grid;gap:8px;margin-top:6px}
+.hekle .iki{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sporbos{display:grid;gap:8px}.sporbos p{margin:2px 0 6px}
+.sablonlar{margin:14px 2px}.sablonlar summary{color:var(--soluk);font-size:14px;cursor:pointer;margin-bottom:8px}
+.sablonlar .btn{margin-bottom:8px}
+.sporbugun{display:grid;grid-template-columns:1fr auto;gap:2px 10px;text-align:left;width:100%;margin-bottom:14px;color:var(--kakao);font:inherit;cursor:pointer}
+.sporbugun .etk{grid-column:1;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--acc);font-weight:600}
+.sporbugun b{grid-column:1;font-size:17px}.sporbugun small{grid-column:1;color:var(--soluk);font-size:13px}
+.sporbugun i{grid-column:2;grid-row:1/4;align-self:center;font-style:normal;font-size:26px;color:var(--acc)}
+.alt button{font-size:10.5px}

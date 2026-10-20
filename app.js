@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v12";
+  const SURUM = "st-v13";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -173,6 +173,7 @@
 
   /* ---------- alt gezinti ---------- */
   const IKON = {
+    spor: '<svg viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>',
     bugun: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
     hafta: '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
     net: '<svg viewBox="0 0 24 24"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>',
@@ -184,7 +185,7 @@
     const t = P[slug].tur, l = [["bugun", "Bugün"], ["hafta", "Hafta"]];
     if (t === "yks" || t === "karma") l.push(["net", "Netler"], ["oku", "Oku"]);
     if (t === "uni") l.push(["kitap", "Kitaplık"]);
-    l.push(["ayar", "Ayar"]);
+    l.push(["spor", "Spor"], ["ayar", "Ayar"]);
     return l;
   }
   function navCiz() {
@@ -196,6 +197,7 @@
     sekmeAc("bugun");
   }
   function sekmeAc(id) {
+    if (slug && V) { if (id === "bugun") bugunCiz(); else if (id === "hafta") haftaCiz(); else if (id === "spor") sporCiz(); }
     for (const b of $("altNav").children) b.classList.toggle("on", b.dataset.s === id);
     for (const s of document.querySelectorAll(".sekme")) s.classList.toggle("on", s.id === "s-" + id);
     window.scrollTo(0, 0);
@@ -203,7 +205,7 @@
   $("avatarBtn").onclick = () => sekmeAc("ayar");
 
   /* ---------- çizim ---------- */
-  function ciz() { if (!slug) return; ustCiz(); bugunCiz(); haftaCiz(); netCiz(); okuCiz(); kitapCiz(); $("surum").textContent = "Karaambar Kamyoncular Derneği · " + SURUM; }
+  function ciz() { if (!slug) return; ustCiz(); bugunCiz(); haftaCiz(); netCiz(); okuCiz(); kitapCiz(); sporCiz(); $("surum").textContent = "Karaambar Kamyoncular Derneği · " + SURUM; }
 
   function ustCiz() {
     const p = P[slug], m = simdiDk();
@@ -239,7 +241,9 @@
       const y = say.filter((b) => isaretli(g, b)).length;
       k.innerHTML = '<span class="etk">Gün bitti</span><h3>' + (say.length ? y + "/" + say.length + " blok" : "Bugün dinlen") + '</h3><span class="zaman">' + (say.length && y >= say.length ? "Tam gün. Helal." : "Yarın kaldığın yerden.") + "</span>";
     }
-    if (hedef) {
+    if (su && su.tur === "spor" && (sporV().program[PR.haftaGunu(g)] || []).length) {
+      const sb = el("button", "btn", "Antrenmanı aç ›"); sb.onclick = () => { sporGun = PR.haftaGunu(g); sekmeAc("spor"); }; k.appendChild(sb);
+    } else if (hedef) {
       const bt = el("button", "btn", "✓ " + kac(hedef.ad) + " bitti");
       bt.onclick = () => { isaretle(g, hedef, true); tost(p.nazik ? "Bir adım daha. Aferin." : "İşaretlendi. Devam."); };
       k.appendChild(bt);
@@ -250,7 +254,7 @@
     for (let i = 0; i < 7; i++) { const gg = gunEkle(hb, i), bl = PR.gunluk(slug, gg).filter((b) => b.say); top += bl.length; yap += bl.filter((b) => isaretli(gg, b)).length; }
     $("haftaIlerleme").innerHTML = top ? "<span>Bu hafta</span><div class=\"cubuk\"><i style=\"width:" + Math.round(yap / top * 100) + "%\"></i></div><b>" + yap + "/" + top + "</b>" : "";
 
-    plan3Ciz(g);
+    plan3Ciz(g); sporBugunCiz(g);
     $("profilNot").hidden = !p.not; $("profilNot").textContent = p.not || "";
 
     const ol = $("bloklar"); ol.innerHTML = "";
@@ -363,6 +367,102 @@
     k.appendChild(el("div", "kart", '<b>Ders içeriklerin</b><p class="ince">Derslerini gönderince konu anlatımları burada olacak.</p>'));
   }
 
+
+  /* ---------- spor: program + son kaldırılan kilo ----------
+     V.spor = { program: { 1: [{ id, ad, set, tekrar }], ... }, kayit: { id: [{ t: "2026-10-20", kg: 60, tk: 8 }] } }
+     Program herkesin kendisi; şablonlar sadece hızlı başlangıç. */
+  const SABLON = {
+    tam: { ad: "Tüm vücut · 3 gün", gun: { 1: "A", 3: "A", 5: "A" }, A: [["Squat", 3, "8"], ["Bench Press", 3, "8"], ["Barbell Row", 3, "8"], ["Overhead Press", 3, "10"], ["Romanian Deadlift", 3, "10"], ["Plank", 3, "45 sn"]] },
+    ustalt: { ad: "Üst / Alt · 4 gün", gun: { 1: "U", 2: "L", 4: "U", 5: "L" },
+      U: [["Bench Press", 4, "8"], ["Lat Pulldown", 4, "10"], ["Shoulder Press", 3, "10"], ["Cable Row", 3, "10"], ["Biceps Curl", 3, "12"], ["Triceps Pushdown", 3, "12"]],
+      L: [["Squat", 4, "8"], ["Romanian Deadlift", 3, "10"], ["Leg Press", 3, "12"], ["Leg Curl", 3, "12"], ["Calf Raise", 4, "15"], ["Plank", 3, "45 sn"]] },
+    ppl: { ad: "Push / Pull / Legs · 6 gün", gun: { 1: "P", 2: "C", 3: "B", 4: "P", 5: "C", 6: "B" },
+      P: [["Bench Press", 4, "8"], ["Incline Dumbbell Press", 3, "10"], ["Shoulder Press", 3, "10"], ["Lateral Raise", 3, "15"], ["Triceps Pushdown", 3, "12"]],
+      C: [["Deadlift", 3, "5"], ["Lat Pulldown", 4, "10"], ["Barbell Row", 3, "10"], ["Face Pull", 3, "15"], ["Biceps Curl", 3, "12"]],
+      B: [["Squat", 4, "8"], ["Leg Press", 3, "12"], ["Romanian Deadlift", 3, "10"], ["Leg Curl", 3, "12"], ["Calf Raise", 4, "15"]] }
+  };
+  let sporGun = null, sporAcik = null, sporDuzen = false;
+  const sporV = () => { V.spor = V.spor || { program: {}, kayit: {} }; V.spor.program = V.spor.program || {}; V.spor.kayit = V.spor.kayit || {}; return V.spor; };
+  const yeniId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const kgYaz = (n) => (Math.round(n * 100) / 100).toString().replace(".", ",");
+  function once(t) { const d = PR.gunNo(bugun()) - PR.gunNo(t); return d <= 0 ? "bugün" : d === 1 ? "dün" : d + " gün önce"; }
+  function sablonUygula(k) {
+    const s = sablonUygula.s = SABLON[k], sp = sporV(), eski = sp.program;
+    const adlar = {}; for (const g in eski) for (const h of eski[g]) adlar[h.ad.toLowerCase()] = h.id;   // aynı isimli harekete kayıtlar bağlı kalsın
+    sp.program = {};
+    for (const g in s.gun) sp.program[g] = s[s.gun[g]].map(([ad, set, tekrar]) => ({ id: adlar[ad.toLowerCase()] || (adlar[ad.toLowerCase()] = yeniId()), ad, set, tekrar }));
+    kaydet(); sporCiz(); tost(s.ad + " kuruldu. İstediğin gibi düzenle.");
+  }
+  function sporBugunCiz(g) {
+    const b = $("sporBugun"), l = (sporV().program[PR.haftaGunu(g)] || []);
+    if (!l.length) { b.hidden = true; return; }
+    b.hidden = false;
+    b.innerHTML = '<span class="etk">Bugünkü antrenman</span><b>' + l.length + " hareket</b><small>" + kac(l.slice(0, 3).map((h) => h.ad).join(" · ")) + (l.length > 3 ? " …" : "") + "</small><i>›</i>";
+    b.onclick = () => { sporGun = PR.haftaGunu(g); sekmeAc("spor"); sporCiz(); };
+  }
+  function sporCiz() {
+    if (!slug) return;
+    const sp = sporV(); if (sporGun === null) sporGun = PR.haftaGunu(bugun());
+    const gs = $("sporGunler"); gs.innerHTML = "";
+    for (const g of [1, 2, 3, 4, 5, 6, 0]) {
+      const n = (sp.program[g] || []).length, b = el("button", (g === sporGun ? "on" : "") + (n ? " dolu" : ""), KISA[g] + (n ? "<i></i>" : ""));
+      b.onclick = () => { sporGun = g; sporAcik = null; sporCiz(); }; gs.appendChild(b);
+    }
+    const k = $("sporListe"); k.innerHTML = "";
+    const l = sp.program[sporGun] || [];
+    if (!Object.keys(sp.program).some((g) => (sp.program[g] || []).length)) {
+      const bos = el("div", "kart sporbos", "<b>Programını kur</b><p class=\"ince\">Kendi programın varsa her güne hareketlerini ekle. Yoksa bir şablonla başla, sonra istediğin gibi değiştir. Şablonlar genel örnektir; antrenörün ya da kendi programın varsa onu kullan.</p>");
+      for (const key in SABLON) { const bt = el("button", "btn ikincil", SABLON[key].ad); bt.onclick = () => sablonUygula(key); bos.appendChild(bt); }
+      k.appendChild(bos);
+    } else if (!l.length) k.appendChild(el("p", "ince orta", GUNLER[sporGun] + " dinlenme günü. Hareket eklemek istersen aşağıdan ekle."));
+    l.forEach((h, i) => {
+      const kay = sp.kayit[h.id] || [], son = kay[kay.length - 1], onceki = kay[kay.length - 2];
+      const d = el("div", "hareket" + (sporAcik === h.id ? " acik" : ""));
+      const ok = son && onceki ? (son.kg > onceki.kg ? '<em class="up">▲ ' + kgYaz(son.kg - onceki.kg) + "</em>" : son.kg < onceki.kg ? '<em class="dn">▼ ' + kgYaz(onceki.kg - son.kg) + "</em>" : "") : "";
+      d.innerHTML = '<div class="hb"><div><b>' + kac(h.ad) + "</b><small>" + h.set + " × " + kac(h.tekrar) + "</small></div>" +
+        '<div class="kg">' + (son ? "<strong>" + kgYaz(son.kg) + "<span> kg</span></strong><small>" + ok + once(son.t) + "</small>" : "<small>henüz kayıt yok</small>") + "</div></div>";
+      d.querySelector(".hb").onclick = () => { sporAcik = sporAcik === h.id ? null : h.id; sporCiz(); };
+      if (sporAcik === h.id) {
+        const f = el("form", "hform");
+        f.innerHTML = '<label>Kilo<input name="kg" type="number" inputmode="decimal" step="0.5" min="0" max="500" value="' + (son ? son.kg : "") + '" required></label><label>Tekrar<input name="tk" type="text" inputmode="numeric" maxlength="6" value="' + kac(son && son.tk ? son.tk : String(h.tekrar).split(" ")[0]) + '"></label><button class="btn">Kaydet</button>';
+        f.onsubmit = (e) => {
+          e.preventDefault(); const kg = parseFloat(String(f.kg.value).replace(",", ".")); if (isNaN(kg)) return;
+          const arr = sp.kayit[h.id] = sp.kayit[h.id] || [], t = bugun(), r = { t, kg, tk: f.tk.value.trim() };
+          if (arr.length && arr[arr.length - 1].t === t) arr[arr.length - 1] = r; else arr.push(r);
+          if (arr.length > 60) arr.splice(0, arr.length - 60);
+          kaydet(); sporCiz(); tost(son && kg > son.kg ? "Geçen seferden ağır. Helal." : "Kaydedildi.");
+        };
+        d.appendChild(f);
+        if (kay.length) {
+          const gec = el("div", "gecmis");
+          gec.innerHTML = kay.slice(-6).reverse().map((x) => "<span><b>" + kgYaz(x.kg) + " kg</b>" + (x.tk ? " × " + kac(x.tk) : "") + " · " + x.t.slice(8) + "." + x.t.slice(5, 7) + "</span>").join("");
+          d.appendChild(gec);
+        }
+        const ar = el("div", "harac");
+        const yuk = el("button", "", "↑"), asg = el("button", "", "↓"), duz = el("button", "", "Düzenle"), sil = el("button", "", "Kaldır");
+        yuk.onclick = () => { if (i > 0) { [l[i - 1], l[i]] = [l[i], l[i - 1]]; kaydet(); sporCiz(); } };
+        asg.onclick = () => { if (i < l.length - 1) { [l[i + 1], l[i]] = [l[i], l[i + 1]]; kaydet(); sporCiz(); } };
+        duz.onclick = () => { const ad = prompt("Hareket adı", h.ad); if (ad === null) return; const st = prompt("Set × tekrar (ör. 4x8)", h.set + "x" + h.tekrar); if (ad.trim()) h.ad = ad.trim().slice(0, 40); const m = st && st.match(/^\s*(\d+)\s*[x×*]\s*(.+)$/i); if (m) { h.set = +m[1]; h.tekrar = m[2].trim().slice(0, 10); } kaydet(); sporCiz(); };
+        sil.onclick = () => { if (confirm(h.ad + " bu günden kaldırılsın mı? (Kilo geçmişi silinmez.)")) { l.splice(i, 1); sporAcik = null; kaydet(); sporCiz(); } };
+        ar.append(yuk, asg, duz, sil); d.appendChild(ar);
+      }
+      k.appendChild(d);
+    });
+    if (Object.keys(sp.program).some((g) => (sp.program[g] || []).length)) {
+      const ek = el("form", "kart hekle");
+      ek.innerHTML = '<input name="ad" placeholder="+ Hareket ekle (ör. Bench Press)" maxlength="40" required><div class="iki"><input name="set" type="number" min="1" max="10" placeholder="Set" value="3"><input name="tk" placeholder="Tekrar" value="10" maxlength="10"></div><button class="btn">Ekle</button>';
+      ek.onsubmit = (e) => {
+        e.preventDefault(); const ad = ek.ad.value.trim(); if (!ad) return;
+        let id = null; for (const g in sp.program) for (const x of sp.program[g]) if (x.ad.toLowerCase() === ad.toLowerCase()) id = x.id;
+        (sp.program[sporGun] = sp.program[sporGun] || []).push({ id: id || yeniId(), ad: ad.slice(0, 40), set: +ek.set.value || 3, tekrar: ek.tk.value.trim() || "10" });
+        kaydet(); sporCiz();
+      };
+      k.appendChild(ek);
+      const sb = el("details", "sablonlar"); sb.innerHTML = "<summary>Şablonla baştan kur</summary>";
+      for (const key in SABLON) { const bt = el("button", "btn ikincil", SABLON[key].ad); bt.onclick = () => { if (confirm("Haftalık program şablonla değiştirilsin mi? Kilo geçmişin aynı isimli hareketlerde kalır.")) sablonUygula(key); }; sb.appendChild(bt); }
+      k.appendChild(sb);
+    }
+  }
 
   /* ---------- bildirim ---------- */
   const standalone = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
