@@ -130,11 +130,20 @@
       etiket: "Galata'dan yukarı",
       hedefAd: "İlk durak: TYT 60 net",
       hedef: { TYT: { "Türkçe": 25, "Sosyal": 12, "Matematik": 15, "Fen": 8 } },
-      sabah: 480, aksam: 1350, blokDk: 40, nazik: true,
-      not: "Ders programını ve spor günlerini gönderince okul saatlerin eklenecek.",
-      sabit: [],
-      mini: { g: her, s: "20:05", dk: 15, ad: "Paragraf · 15 dk", gun6: "10:35", gun0: "10:35" },
-      pencere: { 1: [["20:30", 2]], 2: [["20:30", 2]], 3: [["20:30", 2]], 4: [["20:30", 2]], 5: [["20:30", 2]], 6: [["11:00", 2]], 0: [["11:00", 2]] },
+      sabah: 450, aksam: 1350, blokDk: 40, nazik: true,
+      not: "Spor günlerini gönderince eklenecek. Çarşamba 09:00–12:00 iki ders aynı saatte görünüyor; danışmanına sor.",
+      sabit: [
+        { g: [1], s: "09:00", b: "12:00", ad: "Okul · Yönetim Muhasebesi", tur: "ders" },
+        { g: [1], s: "16:00", b: "19:00", ad: "Okul · Örgütsel Çatışma Yönetimi", tur: "ders" },
+        { g: [1], s: "20:00", b: "22:00", ad: "Okul · İnovasyon Yönetimi (uzaktan)", tur: "ders" },
+        { g: [3], s: "09:00", b: "12:00", ad: "Okul · Genel Muhasebe / Stratejik Yönetim", tur: "ders" },
+        { g: [4], s: "09:00", b: "11:00", ad: "Okul · İşletmeler için Yapay Zekâ", tur: "ders" },
+        { g: [4], s: "16:00", b: "18:00", ad: "Okul · Yönetimde Güncel Yaklaşımlar", tur: "ders" },
+        { g: [4], s: "20:00", b: "22:00", ad: "Okul · Atatürk İlkeleri (uzaktan)", tur: "ders" },
+        { g: [5], s: "14:00", b: "16:00", ad: "Okul · Finansal Piyasalar", tur: "ders" }
+      ],
+      mini: { g: her, s: "12:30", dk: 15, ad: "Paragraf · 15 dk", saat: { 1: "12:30", 2: "10:05", 3: "13:05", 4: "12:30", 5: "10:05", 6: "10:35", 0: "10:35" } },
+      pencere: { 1: [["13:00", 2]], 2: [["10:30", 3]], 3: [["13:30", 2]], 4: [["13:00", 2]], 5: [["10:30", 2]], 6: [["11:00", 2]], 0: [["11:00", 2]] },
       donus: tytDonus,
       oku: ["mat", "turkce", "geo", "sosyal", "fizik", "kimya", "biyo"],
       cumleler: [
@@ -149,7 +158,7 @@
         "Günaydın. Bugün sadece küçük adımlar, o kadar.",
         "Kule yüksek ama merdiven tek tek çıkılır.",
         "Bugün kolay başla. Yeter ki başla.",
-        "Galata seni selamlıyor. Akşam biraz zamanın bizim.",
+        "Galata seni selamlıyor. Bugün biraz zamanın bizim.",
         "Dün ne olduysa oldu. Bugün temiz sayfa."
       ],
       bAksam: [
@@ -229,7 +238,7 @@
     for (const r of (p.rutin || [])) if (r.g.includes(g)) liste.push({ s: r.s, b: saat(dk(r.s) + r.dk), ad: r.ad, tur: "mini", say: true });
 
     if (p.mini && p.mini.g.includes(g)) {
-      const s = (g === 6 && p.mini.gun6) || (g === 0 && p.mini.gun0) || p.mini.s;
+      const s = (p.mini.saat && p.mini.saat[g]) || (g === 6 && p.mini.gun6) || (g === 0 && p.mini.gun0) || p.mini.s;
       liste.push({ s, b: saat(dk(s) + p.mini.dk), ad: p.mini.ad, tur: "mini", say: true });
     }
 
