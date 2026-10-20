@@ -1,5 +1,5 @@
-/* sexy tangent · servis çalışanı: kabuk önbellekte, ders sayfaları açıldıkça önbelleğe girer; bildirim gösterir. */
-const SURUM = "st-v5";
+/* Karaambar Kamyoncular Derneği · servis çalışanı: kabuk önbellekte, ders sayfaları açıldıkça önbelleğe girer; bildirim gösterir. */
+const SURUM = "st-v6";
 const KABUK = ["./", "index.html", "styles.css", "app.js", "profiller.js", "lib/supabase.js", "fonts/fonts.css",
   "fonts/inter-latin-wght-normal.woff2", "fonts/fraunces-latin-opsz-italic.woff2", "manifest.webmanifest",
   "icons/ikon-192.png", "icons/desen-bogaz.svg", "icons/desen-kat.svg", "icons/desen-galata.svg", "icons/desen-zirve.svg"];
@@ -13,8 +13,8 @@ self.addEventListener("fetch", (e) => {
     .catch(() => caches.match(e.request, { ignoreSearch: true }).then((r) => r || caches.match("index.html"))));
 });
 self.addEventListener("push", (e) => {
-  let m = {}; try { m = e.data.json(); } catch (_) { m = { title: "tangent", body: e.data ? e.data.text() : "" }; }
-  e.waitUntil(self.registration.showNotification(m.title || "tangent", { body: m.body || "", tag: m.tag || "st", icon: "icons/ikon-192.png", badge: "icons/ikon-192.png" }));
+  let m = {}; try { m = e.data.json(); } catch (_) { m = { title: "Karaambar", body: e.data ? e.data.text() : "" }; }
+  e.waitUntil(self.registration.showNotification(m.title || "Karaambar", { body: m.body || "", tag: m.tag || "st", icon: "icons/ikon-192.png", badge: "icons/ikon-192.png" }));
 });
 self.addEventListener("notificationclick", (e) => {
   e.notification.close();

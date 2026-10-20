@@ -1,9 +1,9 @@
-/* sexy tangent · uygulama
+/* Karaambar Kamyoncular Derneği · uygulama
    Giriş: Supabase Auth (profil başına bir hesap). Veri önce telefonda tutulur, sonra st_veri tablosuna eşitlenir;
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v5";
+  const SURUM = "st-v6";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -177,7 +177,7 @@
   $("avatarBtn").onclick = () => sekmeAc("ayar");
 
   /* ---------- çizim ---------- */
-  function ciz() { if (!slug) return; ustCiz(); bugunCiz(); haftaCiz(); netCiz(); okuCiz(); kitapCiz(); $("surum").textContent = "sexy tangent · " + SURUM; }
+  function ciz() { if (!slug) return; ustCiz(); bugunCiz(); haftaCiz(); netCiz(); okuCiz(); kitapCiz(); $("surum").textContent = "Karaambar Kamyoncular Derneği · " + SURUM; }
 
   function ustCiz() {
     const p = P[slug], m = simdiDk();

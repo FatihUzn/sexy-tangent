@@ -1,4 +1,4 @@
-/* sexy tangent · testler: node araclar/test.js */
+/* Karaambar Kamyoncular Derneği · testler: node araclar/test.js */
 const assert = require("assert");
 const fs = require("fs"), path = require("path");
 const PR = require("../profiller.js");

@@ -1,4 +1,4 @@
-/* sexy tangent · çikolatalı süt: krem zemin, kakao yazı, sütlü çikolata vurgu; her profilin kendi rengi ve deseni */
+/* Karaambar Kamyoncular Derneği · çikolatalı süt: krem zemin, kakao yazı, sütlü çikolata vurgu; her profilin kendi rengi ve deseni */
 :root{
   --zemin:#FBF6EF; --zemin2:#F4EADD; --kart:#FFFDF9; --cizgi:#EADFD2;
   --kakao:#3B2A20; --kakao2:#6B5444; --soluk:#9A8676;
@@ -182,3 +182,4 @@ input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(
   background:var(--kakao);color:#FBF6EF;padding:10px 16px;border-radius:14px;font-size:14px;transition:all .25s;z-index:30;max-width:90vw;text-align:center}
 .tost.on{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.marka h1 small{display:block;font:600 11.5px/1.4 Inter,system-ui,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--soluk);margin-top:8px}

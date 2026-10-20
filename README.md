@@ -1,4 +1,4 @@
-# sexy tangent
+# Karaambar Kamyoncular Derneği
 
 Arkadaşlar için tek site, Netflix gibi profil seçimi. Statik PWA + tek sunucu işlevi (`api/bildir.js`).
 

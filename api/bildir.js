@@ -1,4 +1,4 @@
-/* sexy tangent · anlık bildirim gönderici. Supabase'deki zamanlayıcı 5 dakikada bir çağırır (x-sifre başlığıyla).
+/* Karaambar Kamyoncular Derneği · anlık bildirim gönderici. Supabase'deki zamanlayıcı 5 dakikada bir çağırır (x-sifre başlığıyla).
    Her profile günde iki bildirim: sabah ve gün sonu (saatler profiller.js'te).
    Gizlilik: kilit ekranında okunur; sınav, ders, okul ya da bölüm adı hiçbir zaman yazmaz.
    Tek ortam değişkeni (Vercel → Settings → Environment Variables):
@@ -65,7 +65,7 @@ module.exports = async (req, res) => {
     webpush.setVapidDetails("https://" + (req.headers.host || "localhost"), veri.vapid.acik, veri.vapid.ozel);
     let ok = 0, dusen = 0, mesaj = 0;
     for (const a of veri.aboneler || []) {
-      const liste = govde && govde.deneme ? [{ title: "tangent", body: "Bildirim hattı çalışıyor.", tag: "deneme" }] : secim(a.slug, z, ozet[a.slug]);
+      const liste = govde && govde.deneme ? [{ title: "Karaambar", body: "Bildirim hattı çalışıyor.", tag: "deneme" }] : secim(a.slug, z, ozet[a.slug]);
       for (const m of liste) {
         mesaj++;
         try { await webpush.sendNotification(a.abone, JSON.stringify(m), { TTL: 900, urgency: "high" }); ok++; }

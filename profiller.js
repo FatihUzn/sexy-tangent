@@ -1,4 +1,4 @@
-/* sexy tangent · profiller ve program üreteci.
+/* Karaambar Kamyoncular Derneği · profiller ve program üreteci.
    Hem tarayıcıda (window.Profiller) hem sunucuda (require) çalışır.
    Burada yalnız program, tema ve cümleler var; kişisel veri (işaretler, netler) Supabase'de, sahibine kapalı. */
 (function (kok) {
