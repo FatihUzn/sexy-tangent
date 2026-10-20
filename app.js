@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v8";
+  const SURUM = "st-v9";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -113,16 +113,31 @@
     const a = $("ys1").value, b = $("ys2").value;
     if (a.length < 6) return hata("ysHata", "En az 6 karakter.");
     if (a !== b) return hata("ysHata", "İki şifre aynı değil.");
-    const { error } = await sb.auth.updateUser({ password: a, data: { sifre_degisti: true } });
-    if (error) return hata("ysHata", /different|same/i.test(error.message) ? "Yeni şifre eskisinden farklı olmalı." : error.message);
+    const bt = $("ysBtn"); bt.disabled = true; bt.textContent = "Kaydediliyor…";
+    let error = null;
+    try { ({ error } = await sb.auth.updateUser({ password: a, data: { sifre_degisti: true } })); } catch (x) { error = x; }
+    bt.disabled = false; bt.textContent = "Kaydet";
+    if (error) {
+      const m = String(error.message || error);
+      return hata("ysHata", /different|same/i.test(m) ? "Yeni şifre eskisinden farklı olmalı."
+        : /reauth|nonce/i.test(m) ? "Sunucu bu değişiklik için ek doğrulama istiyor. Fati'ye haber ver."
+        : /weak|least/i.test(m) ? "Şifre çok zayıf; biraz uzat." : "Kaydedilemedi: " + m);
+    }
+    try { localStorage.setItem("st-sd:" + uid, "1"); } catch (x) {}
+    try { await sb.auth.refreshSession(); } catch (x) {}
     $("ys1").value = $("ys2").value = ""; $("ysHata").hidden = true; tost("Şifren kaydedildi."); uygAc();
   };
 
-  function oturumAc(user) {
+  async function oturumAc(user) {
     const s = (user.email || "").split("@")[0];
     if (!P[s]) { tost("Bu hesap için profil yok."); sb.auth.signOut(); return girisCiz(); }
     slug = s; uid = user.id; tema(s); yukle();
-    if (!(user.user_metadata && user.user_metadata.sifre_degisti)) { avatar($("ysAvatar"), s); goster("yeniSifre"); return; }
+    let degisti = user.user_metadata && user.user_metadata.sifre_degisti;
+    if (!degisti && sb) {   // telefondaki oturum eski olabilir: sunucudan taze bilgiyi al
+      try { const { data } = await sb.auth.getUser(); degisti = data && data.user && data.user.user_metadata && data.user.user_metadata.sifre_degisti; } catch (x) {}
+    }
+    if (!degisti) { try { degisti = localStorage.getItem("st-sd:" + uid) === "1"; } catch (x) {} }
+    if (!degisti) { avatar($("ysAvatar"), s); goster("yeniSifre"); return; }
     uygAc();
   }
   function uygAc() { goster("uyg"); navCiz(); ciz(); esitleOku(); bildirimDurum(); if (!V.tanitim) setTimeout(tanitimAc, 400); }
@@ -384,6 +399,7 @@
   };
 
   $("tanitimBtn").onclick = () => tanitimAc();
+  $("ysCikis").onclick = async () => { if (sb) await sb.auth.signOut(); slug = uid = null; girisCiz(); };
   $("sifreBtn").onclick = () => { avatar($("ysAvatar"), slug); goster("yeniSifre"); };
   $("cikisBtn").onclick = async () => { if (sb) await sb.auth.signOut(); slug = uid = null; girisCiz(); };
 
