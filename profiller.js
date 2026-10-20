@@ -181,6 +181,31 @@
         ["İnsanın Anlam Arayışı", "Viktor Frankl", "Kısa ama ağır. İnsanı zor zamanda ayakta tutan şey: bir 'neden'."],
         ["Dört Anlaşma", "Don Miguel Ruiz", "Bir oturuşta biter. Kendine ve başkalarına dört basit kural; iki ağır kitap arası nefes."]
       ],
+      beslenme: {
+        not: "Yurt usulü, kalori saymadan. Hedef kilo vermek değil: kası korumak ve koşuya yakıt.",
+        gun: [
+          ["06:00 · Koşudan önce", "Yarım muz ya da 2 hurma, su"],
+          ["Kahvaltı · koşudan sonra", "3 yumurta (haşlama ya da menemen), 2 dilim tam buğday ekmek, peynir, domates-salatalık, 1 meyve"],
+          ["Okulda ara", "Yoğurt ya da ayran, 1 avuç fındık veya badem"],
+          ["Öğle · yurt/kafeterya", "Tabağın yarısı pilav/makarna/bulgur, çeyreği et/tavuk/köfte ya da kuru baklagil, çeyreği sebze/salata. Ayran; çorba varsa çorba"],
+          ["Antrenmandan 1 saat önce", "Muz ve fıstık ezmeli ekmek, ya da sütle bir kase yulaf"],
+          ["Akşam · yurt", "Öğle ile aynı mantık; et/tavuk/mercimek payı bol"],
+          ["Yatmadan", "1 bardak süt ya da yoğurt"],
+          ["Su", "Günde 2,5–3 litre; koşu ve spor günlerinde biraz daha"]
+        ],
+        kurallar: [
+          "Dinlenme günü: pilav ve ekmek normal porsiyon, ikinci tabak yok. Protein aynen kalsın.",
+          "Haftada bir serbest öğün olabilir.",
+          "Uzak dur: enerji içeceği ve gazlı içecek, her gün fast food, gece geç ağır yemek."
+        ],
+        maraton: [
+          ["Yarıştan önceki 3 gün", "Pilav, makarna, ekmek iki katı. Kuru fasulye, büyük salata ve kızartmayı azalt. Bol su."],
+          ["Yarış sabahı · 3 saat önce", "Beyaz ekmek, bal ya da reçel, muz. Alışkınsan kahve. Denemediğin hiçbir şey yeme."],
+          ["Yarış sırasında", "Her 40–45 dakikada bir jel ya da 2–3 hurma, istasyonlarda su. Jeli önce uzun bir koşuda dene."],
+          ["Yarıştan sonra 1 saat içinde", "Ayran ya da süt, muz, simit. Aynı gün normal yemeye dön."]
+        ],
+        dolap: "Yumurta, yoğurt, ayran, süt, peynir, tam buğday ekmek, yulaf, muz, hurma, fıstık ezmesi, kuruyemiş, ton balığı konservesi."
+      },
       sabah: 360, aksam: 1335, blokDk: 50, plan3: true,
       not: "1. aşama: sabah rutini. 06:00 kalkış ve sabah koşusu oturunca İngilizce ve fitness eklenecek. Maratona kadar koşular hafif.",
       sabit: [

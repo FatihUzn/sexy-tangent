@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v13";
+  const SURUM = "st-v14";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -173,6 +173,7 @@
 
   /* ---------- alt gezinti ---------- */
   const IKON = {
+    beslenme: '<svg viewBox="0 0 24 24"><path d="M7 3v8a2 2 0 0 0 2 2v8M5 3v6M9 3v6M17 21V3c-2 0-4 2-4 6v5h4"/></svg>',
     spor: '<svg viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>',
     bugun: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
     hafta: '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
@@ -185,7 +186,9 @@
     const t = P[slug].tur, l = [["bugun", "Bugün"], ["hafta", "Hafta"]];
     if (t === "yks" || t === "karma") l.push(["net", "Netler"], ["oku", "Oku"]);
     if (t === "uni") l.push(["kitap", "Kitaplık"]);
-    l.push(["spor", "Spor"], ["ayar", "Ayar"]);
+    l.push(["spor", "Spor"]);
+    if (P[slug].beslenme) l.push(["beslenme", "Beslenme"]);
+    l.push(["ayar", "Ayar"]);
     return l;
   }
   function navCiz() {
@@ -205,7 +208,7 @@
   $("avatarBtn").onclick = () => sekmeAc("ayar");
 
   /* ---------- çizim ---------- */
-  function ciz() { if (!slug) return; ustCiz(); bugunCiz(); haftaCiz(); netCiz(); okuCiz(); kitapCiz(); sporCiz(); $("surum").textContent = "Karaambar Kamyoncular Derneği · " + SURUM; }
+  function ciz() { if (!slug) return; ustCiz(); bugunCiz(); haftaCiz(); netCiz(); okuCiz(); kitapCiz(); sporCiz(); beslenmeCiz(); $("surum").textContent = "Karaambar Kamyoncular Derneği · " + SURUM; }
 
   function ustCiz() {
     const p = P[slug], m = simdiDk();
@@ -462,6 +465,18 @@
       for (const key in SABLON) { const bt = el("button", "btn ikincil", SABLON[key].ad); bt.onclick = () => { if (confirm("Haftalık program şablonla değiştirilsin mi? Kilo geçmişin aynı isimli hareketlerde kalır.")) sablonUygula(key); }; sb.appendChild(bt); }
       k.appendChild(sb);
     }
+  }
+
+  /* ---------- beslenme (profilde tanımlıysa) ---------- */
+  function beslenmeCiz() {
+    const b = P[slug].beslenme, k = $("beslenme"); if (!b) { k.innerHTML = ""; return; }
+    let h = '<p class="ince">' + kac(b.not) + "</p>";
+    h += '<div class="kart bes"><span class="etk">Her gün</span>' + b.gun.map((x) => '<div class="bs"><b>' + kac(x[0]) + "</b><span>" + kac(x[1]) + "</span></div>").join("") + "</div>";
+    h += '<div class="kart bes"><span class="etk">Kurallar</span><ul>' + b.kurallar.map((x) => "<li>" + kac(x) + "</li>").join("") + "</ul></div>";
+    h += '<details class="kart bes"><summary><span class="etk">Maraton haftası</span></summary>' + b.maraton.map((x) => '<div class="bs"><b>' + kac(x[0]) + "</b><span>" + kac(x[1]) + "</span></div>").join("") + "</details>";
+    h += '<div class="kart bes"><span class="etk">Dolapta dursun</span><p>' + kac(b.dolap) + "</p></div>";
+    h += '<p class="ince">Genel bir sporcu beslenme düzenidir, diyetisyen programı değildir. Halsizlik, baş dönmesi ya da kramp olursa bir uzmana danış.</p>';
+    k.innerHTML = h;
   }
 
   /* ---------- bildirim ---------- */

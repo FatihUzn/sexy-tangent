@@ -362,3 +362,16 @@ html[data-tema="yol"] .secim button{background:transparent}
 .sporbugun b{grid-column:1;font-size:17px}.sporbugun small{grid-column:1;color:var(--soluk);font-size:13px}
 .sporbugun i{grid-column:2;grid-row:1/4;align-self:center;font-style:normal;font-size:26px;color:var(--acc)}
 .alt button{font-size:10.5px}
+
+/* ---------- beslenme ---------- */
+.bes{margin-bottom:12px;display:grid;gap:10px}
+.bes .etk{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--acc);font-weight:600}
+.bes .bs{display:grid;gap:2px;padding-top:10px;border-top:1px solid var(--cizgi)}
+.bes .bs:first-of-type{border-top:0;padding-top:0}
+.bes .bs b{font-size:13px;color:var(--kakao2);font-weight:600}
+.bes .bs span{font-size:15px;line-height:1.45}
+.bes ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:15px}
+.bes p{margin:0;font-size:15px;line-height:1.5}
+.bes summary{list-style:none;cursor:pointer}.bes summary::-webkit-details-marker{display:none}
+.bes summary .etk::after{content:" ›"}
+.bes[open] summary{margin-bottom:6px}
