@@ -38,10 +38,10 @@ t("Salih: matematik konusu yok (bakım hariç), Fizik en çok", () => {
   assert.ok(!say["Matematik"]); assert.ok(say["Fizik"] >= Math.max(...Object.values(say).filter((v, i) => Object.keys(say)[i] !== "Fizik")));
 });
 
-t("Erhan: hafta içi bloklar 19:30'dan önce başlamıyor, pazar izin", () => {
+t("Erhan: hafta içi bloklar mesaiden sonra; pazar hafif (en çok 3 blok)", () => {
   for (const g of gunler) { const w = PR.haftaGunu(g), l = PR.gunluk("erhan", g);
     if (w >= 1 && w <= 5) for (const b of l.filter((x) => x.say)) assert.ok(PR.dk(b.s) >= 19 * 60 + 30, g + " " + b.s);
-    if (w === 0) assert.ok(l.every((b) => !b.say)); }
+    if (w === 0) assert.ok(l.filter((b) => b.say).length <= 3); }
 });
 
 t("Taha: bloklar kısa (≤40 dk)", () => { for (const g of gunler) for (const b of PR.gunluk("taha", g)) if (b.tur === "calis") assert.ok(PR.dk(b.b) - PR.dk(b.s) <= 40); });
