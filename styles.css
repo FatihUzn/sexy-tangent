@@ -52,7 +52,6 @@ input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(
   -webkit-mask:var(--pd) center/150% auto no-repeat;mask:var(--pd) center/150% auto no-repeat}
 .profil .kutu b{position:absolute;left:14px;bottom:8px;font:italic 400 46px/1 Fraunces,Georgia,serif;color:#fff;opacity:.95}
 .profil span{display:block;margin-top:8px;font-weight:500}
-.profil small{display:block;color:var(--soluk);font-size:12px}
 .profil:active .kutu{transform:scale(.96)}
 .sayfa-alt{position:fixed;inset:0;background:rgba(59,42,32,.28);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
   display:flex;align-items:flex-end;justify-content:center;padding:16px;padding-bottom:calc(var(--alt) + 16px);z-index:20}
@@ -107,6 +106,14 @@ input:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(
 .plan3 label{display:flex;align-items:center;gap:10px}
 .plan3 input[type=text]{padding:10px 12px;border-radius:12px;font-size:15px}
 .plan3 .on+input{text-decoration:line-through;color:var(--soluk)}
+
+.tanitim .giris-kart{text-align:left;gap:10px}
+.tanitim h2{font:italic 400 26px Fraunces,Georgia,serif;color:var(--acc);margin:4px 0 0}
+.tanitim .metin{margin:0 0 6px;color:var(--kakao2);line-height:1.55}
+.tanitim .nokta{display:flex;gap:6px}
+.tanitim .nokta i{width:7px;height:7px;border-radius:50%;background:var(--cizgi)}
+.tanitim .nokta i.on{background:var(--acc);width:20px;border-radius:4px}
+.tanitim .gec{border:0;background:none;color:var(--soluk);padding:6px;font-size:14px}
 
 /* ---------- hafta ---------- */
 .baslik{font-weight:400;font-size:24px;margin:4px 0 12px;letter-spacing:-.01em}

@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v4";
+  const SURUM = "st-v5";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -72,7 +72,7 @@
     for (const s of PR.SIRA) {
       const p = P[s], b = el("button", "profil");
       b.style.setProperty("--p", p.renk); b.style.setProperty("--p2", p.renk2); b.style.setProperty("--pd", "url(icons/desen-" + p.desen + ".svg)");
-      b.innerHTML = '<div class="kutu"><b>' + p.ad[0] + "</b></div><span>" + p.ad + "</span><small>" + kac(p.etiket) + "</small>";
+      b.innerHTML = '<div class="kutu"><b>' + p.ad[0] + "</b></div><span>" + p.ad + "</span>";
       b.onclick = () => sifreSor(s);
       k.appendChild(b);
     }
@@ -114,7 +114,36 @@
     if (!(user.user_metadata && user.user_metadata.sifre_degisti)) { avatar($("ysAvatar"), s); goster("yeniSifre"); return; }
     uygAc();
   }
-  function uygAc() { goster("uyg"); navCiz(); ciz(); esitleOku(); bildirimDurum(); }
+  function uygAc() { goster("uyg"); navCiz(); ciz(); esitleOku(); bildirimDurum(); if (!V.tanitim) setTimeout(tanitimAc, 400); }
+
+  /* ---------- kullanım tanıtımı: ilk girişte bir kez, sonra Ayar'dan ---------- */
+  function tanitimSayfalari() {
+    const p = P[slug], t = p.tur, l = [];
+    l.push(["Hoş geldin " + p.ad, "Burası senin sayfan. Sadece sen görürsün: işaretlerin ve notların senin hesabında durur, başka profiller açamaz."]);
+    l.push(["Bugün", "Üstteki kart şu an ne yapman gerektiğini söyler. Bir bloğu bitirince <b>✓ bitti</b>'ye bas ya da listedeki kutuyu işaretle. Kaçırdığın gün için ceza yok; haftalık çubuk sadece gösterir."]);
+    if (p.plan3) l.push(["Bugünün 3 işi", "Sabah gün planında üç iş yaz, bitirdikçe işaretle. Üçü de bitince gün kazanılmıştır."]);
+    l.push(["Hafta", "Haftanın tamamını tek ekranda görürsün: hangi gün ne var, kaçını bitirdin."]);
+    if (t === "yks" || t === "karma") {
+      l.push(["Netler", "Her denemeden sonra <b>+ Deneme ekle</b> ile netlerini gir. Hedefle yan yana görürsün; en çok açık olan ders kırmızı yanar."]);
+      l.push(["Oku", "Konu anlatımları burada. Her parça tek oturuşta biter, sonunda kısa bir quiz var. Programdaki ders bloğunda o dersin rafını aç."]);
+    }
+    if (t === "uni") l.push(["Kitaplık", "Okuma listen sırayla burada. Bitirdiğini işaretle. Ders içeriklerin gelince aynı sekmeye eklenecek."]);
+    l.push(["Bildirim ve kurulum", "Safari → Paylaş → <b>Ana Ekrana Ekle</b>, sonra uygulamayı oradan aç. <b>Ayar → Bildirimler</b>'i açarsan günde iki bildirim gelir: sabah ve gün sonu. Kilit ekranında ne yaptığın yazmaz."]);
+    return l;
+  }
+  function tanitimAc() {
+    const l = tanitimSayfalari(); let i = 0;
+    const d = el("div", "sayfa-alt tanitim"), k = el("div", "kart giris-kart");
+    d.appendChild(k); document.body.appendChild(d);
+    const kapat = () => { d.remove(); if (!V.tanitim) { V.tanitim = 1; kaydet(); } };
+    const ciz1 = () => {
+      k.innerHTML = '<div class="nokta">' + l.map((_, j) => "<i" + (j === i ? ' class="on"' : "") + "></i>").join("") + "</div><h2>" + l[i][0] + '</h2><p class="metin">' + l[i][1] + "</p>";
+      const b = el("button", "btn", i < l.length - 1 ? "Devam" : "Başlayalım"); b.onclick = () => { if (i < l.length - 1) { i++; ciz1(); } else kapat(); };
+      const g = el("button", "gec", i < l.length - 1 ? "Geç" : ""); g.onclick = kapat;
+      k.append(b); if (i < l.length - 1) k.append(g);
+    };
+    ciz1();
+  }
 
   /* ---------- alt gezinti ---------- */
   const IKON = {
@@ -343,6 +372,7 @@
     } catch (e) { tost("Bildirim açılamadı: " + (e.message || e)); }
   };
 
+  $("tanitimBtn").onclick = () => tanitimAc();
   $("sifreBtn").onclick = () => { avatar($("ysAvatar"), slug); goster("yeniSifre"); };
   $("cikisBtn").onclick = async () => { if (sb) await sb.auth.signOut(); slug = uid = null; girisCiz(); };
 
