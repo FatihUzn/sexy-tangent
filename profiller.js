@@ -131,12 +131,11 @@
       hedefAd: "İlk durak: TYT 60 net",
       hedef: { TYT: { "Türkçe": 25, "Sosyal": 12, "Matematik": 15, "Fen": 8 } },
       sabah: 450, aksam: 1350, blokDk: 40, nazik: true,
-      not: "Spor günlerini gönderince eklenecek. Çarşamba 09:00–12:00 iki ders aynı saatte görünüyor; danışmanına sor.",
       sabit: [
         { g: [1], s: "09:00", b: "12:00", ad: "Okul · Yönetim Muhasebesi", tur: "ders" },
         { g: [1], s: "16:00", b: "19:00", ad: "Okul · Örgütsel Çatışma Yönetimi", tur: "ders" },
         { g: [1], s: "20:00", b: "22:00", ad: "Okul · İnovasyon Yönetimi (uzaktan)", tur: "ders" },
-        { g: [3], s: "09:00", b: "12:00", ad: "Okul · Genel Muhasebe / Stratejik Yönetim", tur: "ders" },
+        { g: [3], s: "09:00", b: "12:00", ad: "Okul · Genel Muhasebe, Stratejik Yönetim", tur: "ders" },
         { g: [4], s: "09:00", b: "11:00", ad: "Okul · İşletmeler için Yapay Zekâ", tur: "ders" },
         { g: [4], s: "16:00", b: "18:00", ad: "Okul · Yönetimde Güncel Yaklaşımlar", tur: "ders" },
         { g: [4], s: "20:00", b: "22:00", ad: "Okul · Atatürk İlkeleri (uzaktan)", tur: "ders" },

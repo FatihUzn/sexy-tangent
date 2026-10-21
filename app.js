@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v14";
+  const SURUM = "st-v15";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -247,7 +247,8 @@
     if (su && su.tur === "spor" && (sporV().program[PR.haftaGunu(g)] || []).length) {
       const sb = el("button", "btn", "Antrenmanı aç ›"); sb.onclick = () => { sporGun = PR.haftaGunu(g); sekmeAc("spor"); }; k.appendChild(sb);
     } else if (hedef) {
-      const bt = el("button", "btn", "✓ " + kac(hedef.ad) + " bitti");
+      const gecti = !(su && su === hedef);   // şu anki blok değil, saati geçmiş ve işaretlenmemiş
+      const bt = el("button", gecti ? "btn ikincil kucuk" : "btn", (gecti ? "Kaçanı işaretle: " : "✓ ") + kac(hedef.ad) + (gecti ? "" : " bitti"));
       bt.onclick = () => { isaretle(g, hedef, true); tost(p.nazik ? "Bir adım daha. Aferin." : "İşaretlendi. Devam."); };
       k.appendChild(bt);
     }
@@ -263,7 +264,8 @@
     const ol = $("bloklar"); ol.innerHTML = "";
     for (const b of l) {
       const li = el("li", "blok" + (b.say ? "" : " pasif") + (b === su ? " simdiki" : "") + (b.say && isaretli(g, b) ? " bitti" : ""));
-      li.innerHTML = '<span class="sa">' + b.s + '</span><span class="ad"><b>' + kac(b.ad) + "</b><small>" + b.s + "–" + b.b + "</small></span>";
+      const [ust, alt] = b.ad.includes(" · ") && !b.say ? [b.ad.split(" · ")[0], b.ad.split(" · ").slice(1).join(" · ")] : [b.ad, ""];
+      li.innerHTML = '<span class="sa">' + b.s + '</span><span class="ad"><b>' + kac(ust) + "</b><small>" + (alt ? kac(alt) + " · " : "") + b.s + "–" + b.b + "</small></span>";
       if (b.say) {
         const t = el("button", "tik" + (isaretli(g, b) ? " on" : ""), "✓");
         t.setAttribute("aria-label", b.ad + " bitti mi");

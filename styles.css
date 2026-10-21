@@ -375,3 +375,7 @@ html[data-tema="yol"] .secim button{background:transparent}
 .bes summary{list-style:none;cursor:pointer}.bes summary::-webkit-details-marker{display:none}
 .bes summary .etk::after{content:" ›"}
 .bes[open] summary{margin-bottom:6px}
+
+.btn.kucuk{padding:10px 14px;font-size:14px;font-weight:500;letter-spacing:0;text-transform:none}
+.blok .ad small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-tema] .btn.ikincil{background:var(--zemin2);color:var(--kakao);box-shadow:none}
