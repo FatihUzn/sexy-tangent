@@ -1,4 +1,4 @@
-/* Karaambar Kamyoncular Derneği · testler: node araclar/test.js */
+/* Bozkurt Ordusu · testler: node araclar/test.js */
 const assert = require("assert");
 const fs = require("fs"), path = require("path");
 const PR = require("../profiller.js");
@@ -8,8 +8,8 @@ let n = 0; const t = (ad, f) => { f(); n++; };
 // Kilit ekranında görünebilecek her yerde yasak kelimeler
 const YASAK = /\b(yks|tyt|ayt|sınav|sinav|ösym|osym|üniversite|itü|itu|bilecik|galata üni|ders|okul|fizik|kimya|biyoloji|matematik|türkçe|sosyal|deneme|net|iktisat|işletme|mühendis)/i;
 
-t("dört profil var, hepsi tam", () => {
-  assert.deepStrictEqual(PR.SIRA.slice().sort(), ["erhan", "salih", "samed", "taha"]);
+t("altı profil var, hepsi tam", () => {
+  assert.deepStrictEqual(PR.SIRA.slice().sort(), ["erhan", "fati", "fikret", "salih", "samed", "taha"]);
   for (const s of PR.SIRA) { const p = PR.P[s];
     for (const k of ["ad", "tur", "renk", "renk2", "desen", "sabah", "aksam", "cumleler", "bSabah", "bAksam"]) assert.ok(p[k] != null, s + "." + k);
     assert.ok(fs.existsSync(path.join(__dirname, "..", "icons", "desen-" + p.desen + ".svg")), s + " deseni");
@@ -51,7 +51,7 @@ t("bildirim: her profile günde tam iki, yasak kelime yok", () => {
     let toplam = 0;
     for (let d = 0; d < 1440; d += 5) for (const m of B.secim(s, { gun: g, dilim: d }, { gun: g, yapilan: 2, toplam: 3 })) {
       toplam++; assert.ok(!YASAK.test(m.title) && !YASAK.test(m.body), s + " " + g + ": " + m.title + " / " + m.body); }
-    assert.strictEqual(toplam, 2, s + " " + g);
+    assert.strictEqual(toplam, PR.P[s].sessiz ? 0 : 2, s + " " + g);
   }
 });
 
@@ -76,4 +76,55 @@ t("ders sayfalarında 275'e ait betik ya da raf kalmadı", () => {
   }
 });
 
-console.log("tamam: " + n + " test");
+t("oku rafları: her profilin rafı hem dosya hem RAF listesinde var", () => {
+  const app = fs.readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+  for (const s of PR.SIRA) for (const r of PR.P[s].oku) {
+    assert.ok(fs.existsSync(path.join(__dirname, "..", "oku", r + ".html")), s + " " + r);
+    assert.ok(new RegExp("\\b" + r + ': \\["').test(app), "RAF " + r);
+  }
+});
+
+t("iş okumalarında kilit, sınav şeridi ve dış bağlantı kalıntısı yok", () => {
+  for (const r of PR.P.fikret.oku) {
+    const s = fs.readFileSync(path.join(__dirname, "..", "oku", r + ".html"), "utf8");
+    assert.ok(s.includes("var DERS_SAYFASI=true;"), r);
+    assert.ok(!/claude\.ai\/artifact|dosya-[a-z]+\.html|Dünya Nasıl İşler/.test(s), r);
+  }
+});
+
+t("açık depo: yeni profillerde kişisel ayrıntı yok", () => {
+  const metin = JSON.stringify(PR.P.fikret) + JSON.stringify(PR.P.fati);
+  assert.ok(!/kira|dolar|\$|zengin|servet|miras|babas|yks|275|hedef/i.test(metin), "fikret/fati profil metni");
+  assert.ok(!PR.P.fati.hedef && PR.P.fati.tur === "sade");
+});
+
+t("kurlar: Truncgil ve TCMB biçimleri okunur", () => {
+  const K = require("../api/kurlar.js")._test;
+  assert.strictEqual(K.sayi("6.590,99"), 6590.99); assert.strictEqual(K.sayi("$4.133,11"), 4133.11); assert.strictEqual(K.sayi("%-0,12"), -0.12);
+  const a = K.truncgilAyikla({ Update_Date: "2026-10-21 23:00:04", USD: { "Alış": "49,5914", "Satış": "49,6075", "Değişim": "%0,08" }, "gram-altin": { "Alış": "6.593,34", "Satış": "6.594,19", "Değişim": "%0,32" } });
+  assert.strictEqual(a.kalemler.length, 2); assert.strictEqual(a.kalemler[0].satis, 49.6075); assert.strictEqual(a.kalemler[1].alis, 6593.34);
+  const b = K.tcmbAyikla('<Tarih_Date Tarih="21.10.2026"><Currency CrossOrder="0" Kod="USD" CurrencyCode="USD"><ForexBuying>49.5123</ForexBuying><ForexSelling>49.6015</ForexSelling></Currency></Tarih_Date>');
+  assert.strictEqual(b.kalemler[0].satis, 49.6015); assert.strictEqual(b.tarih, "21.10.2026");
+});
+
+t("mesaj bildirimi: duvar herkese (yazan hariç), birebir yalnız alıcıya", () => {
+  const M = require("../api/mesaj.js")._test;
+  assert.deepStrictEqual(M.alicilar({ kimden: "fati", kime: "herkes" }).sort(), PR.SIRA.filter((s) => s !== "fati").sort());
+  assert.deepStrictEqual(M.alicilar({ kimden: "fati", kime: "fikret" }), ["fikret"]);
+  assert.deepStrictEqual(M.alicilar({ kimden: "fati", kime: "yabanci" }), []);
+});
+
+(async () => {
+  // uçtan uca şifreleme: iki kişi okur; üçüncü kişi ve yanlış şifre okuyamaz
+  const S = require("../sifre.js");
+  const a = await S.yeniAnahtar("ornek-sifre-1"), b = await S.yeniAnahtar("ornek-sifre-2"), c = await S.yeniAnahtar("ornek-sifre-3");
+  const m = await S.sifrele(a.ozel, b.kayit.ak, "Selam, yarın görüşelim.");
+  assert.ok(m.startsWith("e1.") && !m.includes("Selam"));
+  assert.strictEqual(await S.coz(b.ozel, a.kayit.ak, m), "Selam, yarın görüşelim.");
+  assert.strictEqual(await S.coz(await S.kilitAc(a.kayit, "ornek-sifre-1"), b.kayit.ak, m), "Selam, yarın görüşelim.");
+  await assert.rejects(S.kilitAc(a.kayit, "yanlis-sifre"));
+  await assert.rejects(S.coz(c.ozel, a.kayit.ak, m));
+  assert.ok(!JSON.stringify(a.kayit).includes('"d"'), "gizli anahtar açıkta değil");
+  n++;
+  console.log("tamam: " + n + " test");
+})().catch((e) => { console.error(e); process.exit(1); });

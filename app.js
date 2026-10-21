@@ -1,9 +1,9 @@
-/* Karaambar Kamyoncular Derneği · uygulama
+/* Bozkurt Ordusu · uygulama
    Giriş: Supabase Auth (profil başına bir hesap). Veri önce telefonda tutulur, sonra st_veri tablosuna eşitlenir;
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v18";
+  const SURUM = "st-v19";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -13,7 +13,10 @@
   const RAF = {
     mat: ["Matematik", "Sayılardan olasılığa, 48 parça"], geo: ["Geometri", "Açıdan çembere, TYT kısmı"],
     turkce: ["Türkçe", "Paragraf, anlam, dil bilgisi"], sosyal: ["Sosyal", "Tarih, coğrafya, felsefe, din"],
-    fizik: ["Fizik", "Hareketten modern fiziğe"], kimya: ["Kimya", "Atomdan organiğe"], biyo: ["Biyoloji", "Hücreden ekolojiye"]
+    fizik: ["Fizik", "Hareketten modern fiziğe"], kimya: ["Kimya", "Atomdan organiğe"], biyo: ["Biyoloji", "Hücreden ekolojiye"],
+    tahsilat: ["Tahsilat", "Alacak, çek, senet, vade"], pazarlik: ["Pazarlık", "Masada ne söylenir, ne söylenmez"],
+    ortaklik: ["Ortaklık", "Ortakla iş, sözleşme, ayrılık"], sirket: ["Şirket", "Şahıs mı, limited mi, kâr nasıl çekilir"],
+    banka: ["Banka", "Kredi, faiz, teminat, POS"], para: ["Para", "Enflasyon, kur, birikim, risk"]
   };
 
   const $ = (id) => document.getElementById(id);
@@ -140,12 +143,34 @@
     if (!degisti) { avatar($("ysAvatar"), s); goster("yeniSifre"); return; }
     uygAc();
   }
-  function uygAc() { goster("uyg"); navCiz(); ciz(); esitleOku(); bildirimDurum(); if (!V.tanitim) setTimeout(tanitimAc, 400); }
+  function uygAc() {
+    goster("uyg"); ozel = null; mesajlar = []; mesajSon = 0; mKonu = null; cozulmus = {}; sonRozet = null;
+    navCiz(); ciz(); esitleOku(); bildirimDurum(); mesajBasla();
+    if (location.hash === "#mesaj") { history.replaceState(null, "", location.pathname); sekmeAc("mesaj"); }
+    else if (!V.tanitim) setTimeout(tanitimAc, 400);
+  }
 
   /* ---------- kullanım tanıtımı: ilk girişte bir kez, sonra Ayar'dan ---------- */
   function tanitimSayfalari() {
     const p = P[slug], t = p.tur, l = [];
     l.push(["Hoş geldin " + p.ad, "Burası senin sayfan. Sadece sen görürsün: işaretlerin ve notların senin hesabında durur, başka profiller açamaz."]);
+    const mesajS = ["Mesajlar", "Sağ üstteki zarf. <b>Ortak duvar</b>a yazdığını herkes görür. Birebir mesajlar uçtan uca şifreli: yalnız sen ve karşındaki okur, uygulamayı yöneten bile açamaz. İlk açışta bir <b>mesaj şifresi</b> koyarsın; unutursan eski birebir mesajlar açılmaz."];
+    const panoS = ["Pano", "Döviz ve altın kurları (5 dakikada bir yenilenir), hızlı TL hesabı, yapılacaklar listesi ve notların tek ekranda. Kurlar gecikmeli olabilir; alım-satımda bankanın ya da kuyumcunun ekranı geçerli."];
+    const kurS = ["Bildirim ve kurulum", "Safari → Paylaş → <b>Ana Ekrana Ekle</b>, sonra uygulamayı oradan aç. <b>Ayar → Bildirimler</b>'i açarsan yeni mesaj gelince haber verir; kilit ekranında kimden geldiği ve ne yazdığı görünmez."];
+    if (t === "sade") {
+      l.push(["Bugün", "Günün işlerini yaz, bitirdikçe işaretle. Altta kurlar ve gündem."]);
+      l.push(panoS, mesajS, kurS); return l;
+    }
+    if (t === "is") {
+      l.push(["Bugün", "Üstte şu an ne olduğu (dükkân, spor, gün sonu). Rutin işleri bitirince <b>✓</b>'ye bas. Kaçırdığın gün için ceza yok."]);
+      l.push(["Bugünün işleri", "Sabah aklındaki işleri yaz (3 satır hazır, 8'e kadar), bitirdikçe işaretle."]);
+      l.push(panoS);
+      l.push(["Oku", "İş ve para üzerine kısa parçalar: tahsilat, pazarlık, ortaklık, şirket, banka. Her biri tek oturuşta biter."]);
+      l.push(mesajS);
+      l.push(["Gündem", "Bugün'ün en altında. Haberleri tek yerden okursun; günde 15 dakika."]);
+      l.push(["Bildirim ve kurulum", "Safari → Paylaş → <b>Ana Ekrana Ekle</b>, sonra uygulamayı oradan aç. <b>Ayar → Bildirimler</b>'i açarsan sabah ve akşam birer hatırlatma, bir de yeni mesaj bildirimi gelir. Kilit ekranında ayrıntı yazmaz."]);
+      return l;
+    }
     l.push(["Bugün", "Üstteki kart şu an ne yapman gerektiğini söyler. Bir bloğu bitirince <b>✓ bitti</b>'ye bas ya da listedeki kutuyu işaretle. Kaçırdığın gün için ceza yok; haftalık çubuk sadece gösterir."]);
     if (p.plan3 !== false) l.push(["Bugünün işleri", "Sabah gün planında işlerini yaz (3 satır hazır, '+ İş ekle' ile 8'e kadar), bitirdikçe işaretle. Hepsi bitince gün kazanılmıştır."]);
     l.push(["Hafta", "Haftanın tamamını tek ekranda görürsün: hangi gün ne var, kaçını bitirdin."]);
@@ -157,6 +182,7 @@
     }
     if (t === "uni") l.push(["Kitaplık", "Okuma listen sırayla burada. Bitirdiğini işaretle. Ders içeriklerin gelince aynı sekmeye eklenecek."]);
     l.push(["Gündem", "Bugün'ün en altında. Haberleri tek yerden okursun; günün işinin çoğu bitince açılır, günde 15 dakika."]);
+    l.push(mesajS);
     l.push(["Bildirim ve kurulum", "Safari → Paylaş → <b>Ana Ekrana Ekle</b>, sonra uygulamayı oradan aç. <b>Ayar → Bildirimler</b>'i açarsan günde iki bildirim gelir: sabah ve gün sonu. Kilit ekranında ne yaptığın yazmaz."]);
     return l;
   }
@@ -183,11 +209,16 @@
     net: '<svg viewBox="0 0 24 24"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>',
     oku: '<svg viewBox="0 0 24 24"><path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/></svg>',
     kitap: '<svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="2"/><rect x="17" y="14" width="4" height="6" rx="2"/></svg>',
+    pano: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><path d="M13 16.5h7M16.5 13v7"/></svg>',
     ayar: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>'
   };
   function sekmeler() {
-    const t = P[slug].tur, l = [["bugun", "Bugün"], ["hafta", "Hafta"]];
+    const t = P[slug].tur, l = [["bugun", "Bugün"]];
+    if (t === "sade") return l.concat([["pano", "Pano"], ["ayar", "Ayar"]]);
+    if (P[slug].pano) l.push(["pano", "Pano"]);
+    l.push(["hafta", "Hafta"]);
     if (t === "yks" || t === "karma") l.push(["net", "Netler"], ["oku", "Oku"]);
+    if (t === "is" && P[slug].oku.length) l.push(["oku", "Oku"]);
     if (t === "uni") l.push(["kitap", "Kitaplık"]);
     l.push(["spor", "Spor"]);
     if (P[slug].beslenme) l.push(["beslenme", "Beslenme"]);
@@ -203,7 +234,7 @@
     sekmeAc("bugun");
   }
   function sekmeAc(id) {
-    if (slug && V) { if (id === "bugun") bugunCiz(); else if (id === "hafta") haftaCiz(); else if (id === "spor") sporCiz(); else if (id === "gundem") gundemCiz(); }
+    if (slug && V) { if (id === "bugun") bugunCiz(); else if (id === "hafta") haftaCiz(); else if (id === "spor") sporCiz(); else if (id === "gundem") gundemCiz(); else if (id === "pano") panoCiz(); else if (id === "mesaj") mesajCiz(); }
     for (const b of $("altNav").children) b.classList.toggle("on", b.dataset.s === id);
     for (const s of document.querySelectorAll(".sekme")) s.classList.toggle("on", s.id === "s-" + id);
     window.scrollTo(0, 0);
@@ -211,7 +242,7 @@
   $("avatarBtn").onclick = () => sekmeAc("ayar");
 
   /* ---------- çizim ---------- */
-  function ciz() { if (!slug) return; ustCiz(); bugunCiz(); haftaCiz(); netCiz(); okuCiz(); kitapCiz(); sporCiz(); beslenmeCiz(); sinavCiz(); $("surum").textContent = "Karaambar Kamyoncular Derneği · " + SURUM; }
+  function ciz() { if (!slug) return; ustCiz(); bugunCiz(); haftaCiz(); netCiz(); okuCiz(); kitapCiz(); sporCiz(); beslenmeCiz(); sinavCiz(); $("surum").textContent = "Bozkurt Ordusu · " + SURUM; }
 
   function ustCiz() {
     const p = P[slug], m = simdiDk();
@@ -269,6 +300,10 @@
 
     plan3Ciz(g); sporBugunCiz(g);
     $("profilNot").hidden = !p.not; $("profilNot").textContent = p.not || "";
+    kurMiniCiz();
+    const sade = p.tur === "sade";   // sade profilde program yok: şu an kartı, blok listesi ve seri gizli
+    for (const id of ["simdi", "bloklar", "haftaIlerleme"]) $(id).hidden = sade;
+    if (sade) { $("haftaOzet").hidden = true; return; }
 
     const ol = $("bloklar"); ol.innerHTML = "";
     for (const b of l) {
@@ -553,6 +588,7 @@
     if (!("setAppBadge" in navigator)) return;
     let n = 0;
     if (yksMi()) { const g = PR.gunNo(PR.SINAV) - PR.gunNo(bugun()); n = g <= 0 ? 0 : g >= 7 ? Math.floor(g / 7) : g; }
+    else n = okunmamis();   // öbürlerinde okunmamış mesaj sayısı
     if (n === sonRozet) return; sonRozet = n;
     try { (n > 0 ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(() => {}); } catch (e) {}
   }
@@ -569,7 +605,7 @@
       if (b && !isaretli(o.gun, b)) isaretle(o.gun, b, true);
       try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (e) {}
       tost(o.ad + " bitti, işaretlendi.");
-      try { if (document.hidden && window.Notification && Notification.permission === "granted") navigator.serviceWorker.ready.then((r) => r.showNotification("Karaambar", { body: "Süre doldu.", tag: "odak", icon: "icons/ikon-192.png" })); } catch (e) {}
+      try { if (document.hidden && window.Notification && Notification.permission === "granted") navigator.serviceWorker.ready.then((r) => r.showNotification("Bozkurt Ordusu", { body: "Süre doldu.", tag: "odak", icon: "icons/ikon-192.png" })); } catch (e) {}
     }
     bugunCiz();
   }
@@ -819,6 +855,273 @@
     const d = gundemDurum(); if (!d.acik) gundemCiz(); else $("gundemAlt").textContent = "Bugün kalan süre: " + Math.ceil(d.kalan / 60) + " dk";
   }, 5000);
 
+  /* ---------- Pano: kurlar, hesap, yapılacaklar, notlar (profilde pano: true) ----------
+     Kurlar api/kurlar'dan gelir (5 dk önbellek); son gelen telefonda saklanır, bağlantı yokken de görünür. */
+  const KUR_ANA = ["USD", "EUR", "gram-altin", "ceyrek-altin", "cumhuriyet-altini", "ons"];
+  let kurVeri = null, kurZaman = 0, kurTum = false, kurIstek = null;
+  try { const c = JSON.parse(localStorage.getItem("st-kur") || "null"); if (c && c.v) { kurVeri = c.v; kurZaman = c.z; } } catch (e) {}
+  const tl = (n, b) => n == null ? "—" : n.toLocaleString("tr-TR", { minimumFractionDigits: b, maximumFractionDigits: b });
+  const kurBas = (x) => x.tur === "doviz" ? 4 : x.satis >= 1000 ? 0 : 2;
+  const kurBirim = (x) => x.kod === "ons" ? "$" : "";
+  function kurGetir(zorla) {
+    if (!zorla && kurVeri && Date.now() - kurZaman < 5 * 60000) return Promise.resolve(kurVeri);
+    if (kurIstek) return kurIstek;
+    kurIstek = fetch("api/kurlar", { cache: "no-store" }).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then((v) => { if (v.kalemler && v.kalemler.length) { kurVeri = v; kurZaman = Date.now(); try { localStorage.setItem("st-kur", JSON.stringify({ v, z: kurZaman })); } catch (e) {} } return kurVeri; })
+      .catch(() => kurVeri).finally(() => { kurIstek = null; });
+    return kurIstek;
+  }
+  function kurMiniCiz() {
+    const k = $("kurMini"); if (!P[slug].pano) { k.hidden = true; return; }
+    const v = kurVeri; k.hidden = !v;
+    if (!v) { kurGetir().then(() => kurVeri && kurMiniCiz()); return; }
+    const al = (kod) => v.kalemler.find((x) => x.kod === kod);
+    k.innerHTML = '<span class="etk">Kurlar</span><span class="km">' + ["USD", "EUR", "gram-altin"].map(al).filter(Boolean)
+      .map((x) => "<span>" + (x.kod === "gram-altin" ? "Gram" : x.ad) + " <b>" + tl(x.satis, x.tur === "doviz" ? 2 : 0) + "</b></span>").join("") + "</span><i>›</i>";
+    k.onclick = () => sekmeAc("pano");
+    if (Date.now() - kurZaman > 5 * 60000) kurGetir().then(() => { if (Date.now() - kurZaman < 60000) kurMiniCiz(); });
+  }
+  function kurCiz() {
+    const k = $("kurlar"), v = kurVeri;
+    if (!v || !v.kalemler.length) { k.innerHTML = '<span class="etk">Kurlar</span><p class="ince">' + (kurIstek ? "Yükleniyor…" : "Kurlar yüklenemedi; bağlantını kontrol et.") + "</p>"; return; }
+    const l = kurTum ? v.kalemler : v.kalemler.filter((x) => KUR_ANA.includes(x.kod));
+    let h = '<div class="kurust"><span class="etk">Kurlar</span><button type="button" class="kuryen" id="kurYenile" aria-label="Yenile">↻</button></div>'
+      + '<table class="kurtab"><thead><tr><th></th><th>Alış</th><th>Satış</th><th>Gün</th></tr></thead><tbody>';
+    for (const x of l) {
+      const b = kurBas(x), u = kurBirim(x), d = x.degisim;
+      h += "<tr><td>" + kac(x.ad) + "</td><td>" + u + tl(x.alis, b) + "</td><td><b>" + u + tl(x.satis, b) + '</b></td><td class="' + (d > 0 ? "art" : d < 0 ? "dus" : "") + '">' + (d == null ? "" : (d > 0 ? "+" : "") + tl(d, 2) + "%") + "</td></tr>";
+    }
+    h += '</tbody></table><button type="button" class="isekle" id="kurTum">' + (kurTum ? "Daha az göster" : "Hepsini göster (" + v.kalemler.length + ")") + "</button>"
+      + '<p class="ince kurnot">' + kac(v.kaynak || "") + (v.tarih ? " · " + kac(v.tarih) : "") + ". Gecikmeli olabilir; alım-satımda bankanın ya da kuyumcunun ekranı geçerli.</p>";
+    k.innerHTML = h;
+    $("kurTum").onclick = () => { kurTum = !kurTum; kurCiz(); };
+    $("kurYenile").onclick = () => { $("kurYenile").classList.add("don"); kurGetir(true).then(() => { kurCiz(); hesapCiz(); kurMiniCiz(); }); };
+  }
+  const sayiOku = (s) => {   // "1.500" = bin beş yüz, "1,5" = bir buçuk, "1500.75" de olur
+    s = String(s).trim().replace(/\s/g, "");
+    if (s.includes(",")) s = s.replace(/\./g, "").replace(",", "."); else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+    return parseFloat(s);
+  };
+  function hesapCiz() {
+    const k = $("kurHesap"); if (!kurVeri || !kurVeri.kalemler.length) { k.hidden = true; return; }
+    k.hidden = false;
+    const l = kurVeri.kalemler.filter((x) => x.kod !== "ons");
+    const sec = l.some((x) => x.kod === V.kur_sec) ? V.kur_sec : "USD";
+    const eski = $("khMik") ? $("khMik").value : "";
+    k.innerHTML = '<span class="etk">Hesap</span><div class="khsat"><input type="text" inputmode="decimal" id="khMik" placeholder="Miktar" aria-label="Miktar"><select id="khKod" aria-label="Birim">'
+      + l.map((x) => '<option value="' + x.kod + '"' + (x.kod === sec ? " selected" : "") + ">" + kac(x.ad) + "</option>").join("")
+      + '</select><button type="button" class="khyon" id="khYon" aria-label="Yönü çevir">⇄</button></div><p class="khsonuc" id="khSonuc"></p>';
+    $("khMik").value = eski;
+    const hes = () => {
+      const m = sayiOku($("khMik").value), x = l.find((y) => y.kod === $("khKod").value), tersten = !!V.kur_ters;
+      $("khMik").placeholder = tersten ? "TL tutarı" : "Miktar";
+      if (isNaN(m) || !x) { $("khSonuc").textContent = tersten ? "TL tutarını yaz, kaç " + x.ad.toLowerCase() + " eder göreyim." : "Miktarı yaz, TL karşılığını göreyim."; return; }
+      $("khSonuc").innerHTML = tersten
+        ? "Satıştan alırsın: <b>" + tl(m / x.satis, 2) + "</b> · Alıştan: " + tl(m / x.alis, 2)
+        : "Satış: <b>" + tl(m * x.satis, 2) + " ₺</b> · Alış: " + tl(m * x.alis, 2) + " ₺";
+    };
+    $("khMik").oninput = hes;
+    $("khKod").onchange = () => { V.kur_sec = $("khKod").value; kaydet(); hes(); };
+    $("khYon").onclick = () => { V.kur_ters = V.kur_ters ? 0 : 1; kaydet(); hes(); };
+    hes();
+  }
+  /* Yapılacaklar: tarihsiz liste; bitenler alta iner, "bitenleri temizle" ile silinir. */
+  function yapilacakCiz() {
+    const k = $("yapilacak"); V.yapilacak = V.yapilacak || [];
+    const l = V.yapilacak, acik = l.filter((x) => !x.ok), biten = l.filter((x) => x.ok);
+    k.innerHTML = '<span class="etk">Yapılacaklar' + (l.length ? " · " + acik.length + " açık" : "") + "</span>";
+    const f = el("form", "yekle"); f.innerHTML = '<input type="text" maxlength="140" placeholder="Yeni iş: kime, ne, ne zaman" aria-label="Yeni iş"><button class="btn kucuk">Ekle</button>';
+    f.onsubmit = (e) => { e.preventDefault(); const t = f.querySelector("input").value.trim(); if (!t) return; l.unshift({ id: Date.now(), t, ok: 0, z: bugun() }); kaydet(); yapilacakCiz(); $("yapilacak").querySelector("input").focus(); };
+    k.appendChild(f);
+    for (const x of acik.concat(biten)) {
+      const r = el("div", "ysatir" + (x.ok ? " bitti" : "")), t = el("button", "tik" + (x.ok ? " on" : ""), "✓"), sil = el("button", "issil", "×");
+      t.type = sil.type = "button"; t.setAttribute("aria-label", "Bitti mi"); sil.setAttribute("aria-label", "Sil");
+      t.onclick = () => { x.ok = x.ok ? 0 : 1; if (x.ok) x.bitti = bugun(); kaydet(); yapilacakCiz(); };
+      sil.onclick = () => { V.yapilacak = l.filter((y) => y !== x); kaydet(); yapilacakCiz(); };
+      r.append(t, el("span", "", kac(x.t) + "<small>" + kac(x.z.slice(8) + "." + x.z.slice(5, 7)) + "</small>"), sil); k.appendChild(r);
+    }
+    if (biten.length) { const b = el("button", "isekle", "Bitenleri temizle (" + biten.length + ")"); b.type = "button"; b.onclick = () => { V.yapilacak = acik; kaydet(); yapilacakCiz(); }; k.appendChild(b); }
+    if (!l.length) k.appendChild(el("p", "ince", "Aklındaki işi yaz, kafandan çıksın."));
+  }
+  /* Notlar: yeniden eskiye; dokununca düzenlenir. */
+  function notlarCiz() {
+    const k = $("notlar"); V.notlar = V.notlar || [];
+    k.innerHTML = '<span class="etk">Notlar</span>';
+    const f = el("form", "nekle"); f.innerHTML = '<textarea rows="2" maxlength="2000" placeholder="Not al…" aria-label="Yeni not"></textarea><button class="btn kucuk">Kaydet</button>';
+    f.onsubmit = (e) => { e.preventDefault(); const t = f.querySelector("textarea").value.trim(); if (!t) return; V.notlar.unshift({ id: Date.now(), t, z: new Date().toISOString() }); kaydet(); notlarCiz(); };
+    k.appendChild(f);
+    for (const n of V.notlar) {
+      const d = el("div", "notk"), zz = new Date(n.z);
+      d.innerHTML = '<p></p><div class="nalt"><small>' + PR.p2(zz.getDate()) + "." + PR.p2(zz.getMonth() + 1) + " " + PR.p2(zz.getHours()) + ":" + PR.p2(zz.getMinutes()) + "</small></div>";
+      d.querySelector("p").textContent = n.t;
+      const du = el("button", "isekle", "Düzenle"), sil = el("button", "isekle sil", "Sil"); du.type = sil.type = "button";
+      du.onclick = () => {
+        const ta = el("textarea"); ta.rows = 4; ta.maxLength = 2000; ta.value = n.t; d.querySelector("p").replaceWith(ta); ta.focus();
+        du.textContent = "Kaydet"; du.onclick = () => { const t = ta.value.trim(); if (t) { n.t = t; kaydet(); } notlarCiz(); };
+      };
+      let emin = false; sil.onclick = () => { if (!emin) { emin = true; sil.textContent = "Emin misin?"; setTimeout(() => { emin = false; sil.textContent = "Sil"; }, 3000); return; } V.notlar = V.notlar.filter((y) => y !== n); kaydet(); notlarCiz(); };
+      d.querySelector(".nalt").append(du, sil); k.appendChild(d);
+    }
+  }
+  function panoCiz() { if (!P[slug].pano) return; kurCiz(); hesapCiz(); yapilacakCiz(); notlarCiz(); kurGetir().then(() => { if ($("s-pano").classList.contains("on")) { kurCiz(); hesapCiz(); } kurMiniCiz(); }); }
+
+  /* ---------- Mesajlar: birebir (uçtan uca şifreli, sifre.js) + ortak duvar (şifresiz, üyelerin hepsi görür) ----------
+     Gizli anahtar bu cihazda IndexedDB'de, dışa aktarılamaz biçimde durur; yeni cihazda mesaj şifresiyle açılır.
+     V.anahtar: mesaj şifresiyle kilitli gizli anahtar + açık anahtar. V.mesaj_okundu: { konu: son okunan id }. */
+  const SF = window.Sifre;
+  let ozel = null, mesajlar = [], mesajSon = 0, mKonu = null, aciklar = {}, cozulmus = {}, mesajZ = null, mesajYukleniyor = false;
+  function idb(islem, deger) {
+    return new Promise((ok) => {
+      try {
+        const r = indexedDB.open("bozkurt", 1);
+        r.onupgradeneeded = () => r.result.createObjectStore("anahtar");
+        r.onerror = () => ok(null);
+        r.onsuccess = () => {
+          const tx = r.result.transaction("anahtar", islem === "al" ? "readonly" : "readwrite"), st = tx.objectStore("anahtar");
+          const q = islem === "al" ? st.get(slug) : islem === "sil" ? st.delete(slug) : st.put(deger, slug);
+          q.onsuccess = () => ok(islem === "al" ? q.result || null : true); q.onerror = () => ok(null);
+        };
+      } catch (e) { ok(null); }
+    });
+  }
+  async function anahtarHazir() {
+    if (ozel) return true;
+    if (!V.anahtar || !SF) return false;
+    const k = await idb("al");
+    if (k && k.ozel && SF.ayni(k.ak, V.anahtar.ak)) { ozel = k.ozel; return true; }
+    return false;
+  }
+  async function acikYayinla() { if (sb && V.anahtar) { const { error } = await sb.from("st_anahtar").upsert({ slug, ak: V.anahtar.ak, guncel: new Date().toISOString() }); if (error) console.warn("anahtar", error.message); } }
+  const konuAdi = (k) => k === "herkes" ? "Ortak duvar" : P[k] ? P[k].ad : k;
+  const konuOf = (m) => m.kime === "herkes" ? "herkes" : m.kimden === slug ? m.kime : m.kimden;
+  function okunmamis(konu) {
+    const o = V.mesaj_okundu || {};
+    return mesajlar.filter((m) => m.kimden !== slug && (!konu || konuOf(m) === konu) && m.id > (o[konuOf(m)] || 0)).length;
+  }
+  function mesajSayCiz() { const n = okunmamis(), i = $("mesajSay"); i.hidden = !n; i.textContent = n > 9 ? "9+" : n; rozetYaz(); }
+  async function mesajCek() {
+    if (!sb || !uid || mesajYukleniyor) return; mesajYukleniyor = true;
+    try {
+      let q = sb.from("st_mesaj").select("id,kimden,kime,metin,ak_gonderen,ak_alici,zaman").order("id", { ascending: false }).limit(300);
+      if (mesajSon) q = q.gt("id", mesajSon);
+      const { data, error } = await q; if (error) { console.warn("mesaj", error.message); return; }
+      if (data && data.length) {
+        const yeni = data.reverse(); mesajlar = mesajlar.concat(yeni).slice(-600); mesajSon = mesajlar[mesajlar.length - 1].id;
+        mesajSayCiz();
+        if ($("s-mesaj").classList.contains("on")) mesajCiz();
+      } else if (!mesajSon) mesajSayCiz();
+    } finally { mesajYukleniyor = false; }
+  }
+  async function acikAnahtarlar() {
+    if (!sb) return; const { data } = await sb.from("st_anahtar").select("slug,ak");
+    aciklar = {}; for (const r of data || []) aciklar[r.slug] = r.ak;
+  }
+  async function cozMesaj(m) {
+    if (m.kime === "herkes") return m.metin;
+    if (cozulmus[m.id] != null) return cozulmus[m.id];
+    if (!ozel) return null;
+    const benimAk = m.kimden === slug ? m.ak_gonderen : m.ak_alici, karsiAk = m.kimden === slug ? m.ak_alici : m.ak_gonderen;
+    try { if (!SF.ayni(benimAk, V.anahtar.ak)) throw 0; cozulmus[m.id] = await SF.coz(ozel, karsiAk, m.metin); }
+    catch (e) { cozulmus[m.id] = false; }
+    return cozulmus[m.id];
+  }
+  function mesajNotYaz() {
+    $("mesajNot").textContent = mKonu === "herkes"
+      ? "Ortak duvar şifresiz: üyelerin hepsi okur. Özel bir şeyse birebir yaz."
+      : "Birebir mesajlar uçtan uca şifreli: yalnız sen ve karşındaki okur. Veritabanında karışık metin olarak durur; uygulamayı yöneten de açamaz.";
+  }
+  /* Mesaj şifresi: ilk kurulum, yeni cihazda kilit açma, unutunca sıfırlama. */
+  function kilitCiz(k, sifirla) {
+    const yeni = !V.anahtar || sifirla;
+    k.innerHTML = "";
+    const f = el("form", "kart giris-kart mkilit");
+    f.innerHTML = yeni
+      ? "<h3>" + (sifirla ? "Yeni mesaj şifresi" : "Mesaj şifreni koy") + '</h3><p class="ince">' + (sifirla ? "Eski birebir mesajların artık açılmaz; ortak duvar etkilenmez." : "Birebir mesajların bu şifreyle kilitlenir. Giriş şifrenden farklı olsun, en az 8 karakter. Unutursan eski birebir mesajlar açılmaz; kimse kurtaramaz.") + '</p><input type="password" id="ms1" autocomplete="new-password" placeholder="Mesaj şifresi" minlength="8" required><input type="password" id="ms2" autocomplete="new-password" placeholder="Bir daha" minlength="8" required>'
+      : '<h3>Mesaj şifren</h3><p class="ince">Bu cihazda ilk kez açıyorsun. Mesaj şifreni bir kez gir; bu cihaz hatırlar.</p><input type="password" id="ms1" autocomplete="current-password" placeholder="Mesaj şifresi" required>';
+    f.innerHTML += '<p class="hata" id="msHata" hidden></p><button class="btn">' + (yeni ? "Kur" : "Aç") + "</button>";
+    if (!yeni) { const u = el("button", "gec", "Şifremi unuttum"); u.type = "button"; u.onclick = () => kilitCiz(k, true); f.appendChild(u); }
+    if (sifirla) { const g = el("button", "gec", "Vazgeç"); g.type = "button"; g.onclick = () => kilitCiz(k, false); f.appendChild(g); }
+    f.onsubmit = async (e) => {
+      e.preventDefault(); const h = $("msHata"), b = f.querySelector(".btn"), s1 = $("ms1").value;
+      h.hidden = true;
+      if (yeni && s1 !== $("ms2").value) { h.textContent = "İki şifre aynı değil."; h.hidden = false; return; }
+      b.disabled = true; b.textContent = "Bekle…";
+      try {
+        if (yeni) { const r = await SF.yeniAnahtar(s1); V.anahtar = r.kayit; ozel = r.ozel; cozulmus = {}; kaydet(); await esitleYaz(); await acikYayinla(); }
+        else { ozel = await SF.kilitAc(V.anahtar, s1); await acikYayinla(); }
+        await idb("koy", { ozel, ak: V.anahtar.ak });
+        tost(yeni ? "Mesaj şifren kuruldu." : "Açıldı."); mesajCiz();
+      } catch (er) { h.textContent = yeni ? "Kurulamadı, tekrar dene." : "Şifre yanlış."; h.hidden = false; b.disabled = false; b.textContent = yeni ? "Kur" : "Aç"; }
+    };
+    k.appendChild(f);
+  }
+  async function mesajCiz() {
+    const kilit = $("mesajKilit"), liste = $("mesajListe"), form = $("mesajForm");
+    if (!sb) { kilit.innerHTML = '<div class="kart"><p class="ince">Mesajlar yalnız girişli kullanımda açık.</p></div>'; liste.innerHTML = ""; form.hidden = true; return; }
+    const hazir = await anahtarHazir();
+    if (!hazir) { kilitCiz(kilit); liste.innerHTML = ""; form.hidden = true; $("mesajBaslik").textContent = "Mesajlar"; $("mesajNot").textContent = ""; return; }
+    kilit.innerHTML = "";
+    if (!mKonu) {   // konu listesi
+      $("mesajBaslik").textContent = "Mesajlar"; form.hidden = true; $("mesajNot").textContent = "Birebir mesajlar uçtan uca şifreli. Ortak duvarı üyelerin hepsi görür.";
+      liste.innerHTML = "";
+      for (const k of ["herkes"].concat(PR.SIRA.filter((s) => s !== slug))) {
+        const son = mesajlar.filter((m) => konuOf(m) === k).pop(), n = okunmamis(k);
+        const b = el("button", "konu" + (n ? " yeni" : ""));
+        b.style.setProperty("--p", k === "herkes" ? "var(--acc)" : P[k].renk);
+        b.innerHTML = '<span class="kav">' + (k === "herkes" ? "★" : P[k].ad[0]) + '</span><span class="kmet"><b>' + konuAdi(k) + "</b><small></small></span>" + (n ? "<i>" + n + "</i>" : "");
+        if (son) { cozMesaj(son).then((t) => { b.querySelector("small").textContent = (son.kimden === slug ? "Sen: " : k === "herkes" ? P[son.kimden].ad + ": " : "") + (t === false ? "🔒 açılamadı" : t || "🔒"); }); }
+        else b.querySelector("small").textContent = k === "herkes" ? "Herkese bir şey yaz" : "Henüz mesaj yok";
+        b.onclick = () => { mKonu = k; mesajCiz(); window.scrollTo(0, 0); };
+        liste.appendChild(b);
+      }
+      return;
+    }
+    // konu içi
+    const k = mKonu; $("mesajBaslik").textContent = konuAdi(k); mesajNotYaz();
+    const l = mesajlar.filter((m) => konuOf(m) === k);
+    liste.innerHTML = l.length ? "" : '<p class="ince orta">Henüz mesaj yok. İlk sen yaz.</p>';
+    let oncekiGun = "";
+    for (const m of l) {
+      const z = new Date(m.zaman), gun = z.toLocaleDateString("tr-TR", { day: "numeric", month: "long" });
+      if (gun !== oncekiGun) { liste.appendChild(el("div", "mgun", gun)); oncekiGun = gun; }
+      const ben = m.kimden === slug, d = el("div", "balon" + (ben ? " ben" : ""));
+      d.innerHTML = (k === "herkes" && !ben ? "<b>" + kac(P[m.kimden] ? P[m.kimden].ad : m.kimden) + "</b>" : "") + '<p>…</p><small>' + PR.p2(z.getHours()) + ":" + PR.p2(z.getMinutes()) + "</small>";
+      cozMesaj(m).then((t) => { const p = d.querySelector("p"); if (t === false) { p.textContent = "🔒 Eski anahtarla şifrelenmiş, açılamıyor."; d.classList.add("kilitli"); } else p.textContent = t; });
+      if (ben) { let emin = false; d.onclick = async () => { if (!emin) { emin = true; d.classList.add("silsor"); setTimeout(() => { emin = false; d.classList.remove("silsor"); }, 2500); return; } const { error } = await sb.from("st_mesaj").delete().eq("id", m.id); if (!error) { mesajlar = mesajlar.filter((x) => x !== m); mesajCiz(); } }; d.title = "Silmek için iki kez dokun"; }
+      liste.appendChild(d);
+    }
+    form.hidden = false;
+    const enSon = l.length ? l[l.length - 1].id : 0;
+    V.mesaj_okundu = V.mesaj_okundu || {};
+    if (enSon > (V.mesaj_okundu[k] || 0)) { V.mesaj_okundu[k] = enSon; kaydet(); mesajSayCiz(); }
+    setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 30);
+  }
+  $("mesajForm").onsubmit = async (e) => {
+    e.preventDefault();
+    const ta = $("mesajMetin"), t = ta.value.trim(), b = $("mesajGonder"), k = mKonu; if (!t || !k || !sb) return;
+    b.disabled = true;
+    try {
+      const satir = { kimden: slug, kime: k, metin: t };
+      if (k !== "herkes") {
+        await acikAnahtarlar();
+        const ak = aciklar[k];
+        if (!ak) { tost(P[k].ad + " henüz mesaj şifresini kurmadı. Kurunca yazabilirsin."); return; }
+        satir.metin = await SF.sifrele(ozel, ak, t); satir.ak_gonderen = V.anahtar.ak; satir.ak_alici = SF.acikSade(ak);
+      }
+      const { data, error } = await sb.from("st_mesaj").insert(satir).select("id,kimden,kime,metin,ak_gonderen,ak_alici,zaman").single();
+      if (error) { tost("Gönderilemedi: " + error.message); return; }
+      cozulmus[data.id] = t; ta.value = ""; ta.style.height = "";
+      mesajlar.push(data); mesajSon = Math.max(mesajSon, data.id); mesajCiz();
+      sb.auth.getSession().then(({ data: s }) => fetch("api/mesaj", { method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + s.session.access_token }, body: JSON.stringify({ id: data.id }) })).catch(() => {});
+    } catch (er) { tost("Gönderilemedi."); } finally { b.disabled = false; }
+  };
+  $("mesajMetin").oninput = () => { const ta = $("mesajMetin"); ta.style.height = ""; ta.style.height = Math.min(160, ta.scrollHeight) + "px"; };
+  $("mesajBtn").onclick = () => { mKonu = null; sekmeAc("mesaj"); };
+  $("mesajGeri").onclick = () => { if (mKonu) { mKonu = null; mesajCiz(); } else sekmeAc("bugun"); };
+  function mesajBasla() { clearInterval(mesajZ); mesajCek(); mesajZ = setInterval(() => { if (!document.hidden) mesajCek(); }, 30000); }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && slug) mesajCek(); });
+  if (navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.ac === "mesaj" && slug) { mesajCek(); mKonu = null; sekmeAc("mesaj"); } });
+
   /* ---------- bildirim ---------- */
   const standalone = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   async function bildirimDurum() {
@@ -854,9 +1157,9 @@
   };
 
   $("tanitimBtn").onclick = () => tanitimAc();
-  $("ysCikis").onclick = async () => { if (sb) await sb.auth.signOut(); slug = uid = null; girisCiz(); };
+  $("ysCikis").onclick = async () => { await idb("sil"); ozel = null; clearInterval(mesajZ); if (sb) await sb.auth.signOut(); slug = uid = null; girisCiz(); };
   $("sifreBtn").onclick = () => { avatar($("ysAvatar"), slug); goster("yeniSifre"); };
-  $("cikisBtn").onclick = async () => { if (sb) await sb.auth.signOut(); slug = uid = null; girisCiz(); };
+  $("cikisBtn").onclick = async () => { await idb("sil"); ozel = null; clearInterval(mesajZ); if (sb) await sb.auth.signOut(); slug = uid = null; girisCiz(); };
 
   /* ---------- başlangıç ---------- */
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});

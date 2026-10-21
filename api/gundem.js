@@ -28,7 +28,7 @@ async function getir(url) {
   const kontrol = new AbortController();
   const zaman = setTimeout(() => kontrol.abort(), 8000);
   try {
-    const r = await fetch(url, { signal: kontrol.signal, headers: { "user-agent": "Mozilla/5.0 (karaambar-gundem)", accept: "text/html,application/xml,text/xml,*/*" } });
+    const r = await fetch(url, { signal: kontrol.signal, headers: { "user-agent": "Mozilla/5.0 (bozkurt-gundem)", accept: "text/html,application/xml,text/xml,*/*" } });
     if (!r.ok) throw new Error("HTTP " + r.status);
     return await r.text();
   } finally { clearTimeout(zaman); }
