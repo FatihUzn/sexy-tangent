@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v17";
+  const SURUM = "st-v18";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -149,11 +149,14 @@
     l.push(["Bugün", "Üstteki kart şu an ne yapman gerektiğini söyler. Bir bloğu bitirince <b>✓ bitti</b>'ye bas ya da listedeki kutuyu işaretle. Kaçırdığın gün için ceza yok; haftalık çubuk sadece gösterir."]);
     if (p.plan3 !== false) l.push(["Bugünün işleri", "Sabah gün planında işlerini yaz (3 satır hazır, '+ İş ekle' ile 8'e kadar), bitirdikçe işaretle. Hepsi bitince gün kazanılmıştır."]);
     l.push(["Hafta", "Haftanın tamamını tek ekranda görürsün: hangi gün ne var, kaçını bitirdin."]);
+    l.push(["Sayaç ve seri", "Şu an kartındaki <b>Sayacı başlat</b> bloğun sonuna kadar sayar, bitince bloğu kendisi işaretler. Günün %70'ini bitirdiğin günler üst üste seriyi büyütür; 3, 7, 14… günde rozet. Pazar akşamı haftanın özeti çıkar."]);
     if (t === "yks" || t === "karma") {
       l.push(["Netler", "Her denemeden sonra <b>+ Deneme ekle</b> ile netlerini gir. Hedefle yan yana görürsün; en çok açık olan ders kırmızı yanar."]);
       l.push(["Oku", "Konu anlatımları burada. Her parça tek oturuşta biter, sonunda kısa bir quiz var. Programdaki ders bloğunda o dersin rafını aç."]);
+      l.push(["Yanlış defteri", "Netler'in altında. Denemede yanlış ya da boş bıraktığın her soruyu dersi, konusu ve nedeniyle gir. O konu 1, 3, 7 ve 21 gün sonra tekrar için önüne gelir. <b>Deneme sayacı</b> gerçek süreyle deneme çözdürür, bitince net girişine götürür."]);
     }
     if (t === "uni") l.push(["Kitaplık", "Okuma listen sırayla burada. Bitirdiğini işaretle. Ders içeriklerin gelince aynı sekmeye eklenecek."]);
+    l.push(["Gündem", "Bugün'ün en altında. Haberleri tek yerden okursun; günün işinin çoğu bitince açılır, günde 15 dakika."]);
     l.push(["Bildirim ve kurulum", "Safari → Paylaş → <b>Ana Ekrana Ekle</b>, sonra uygulamayı oradan aç. <b>Ayar → Bildirimler</b>'i açarsan günde iki bildirim gelir: sabah ve gün sonu. Kilit ekranında ne yaptığın yazmaz."]);
     return l;
   }
@@ -200,7 +203,7 @@
     sekmeAc("bugun");
   }
   function sekmeAc(id) {
-    if (slug && V) { if (id === "bugun") bugunCiz(); else if (id === "hafta") haftaCiz(); else if (id === "spor") sporCiz(); }
+    if (slug && V) { if (id === "bugun") bugunCiz(); else if (id === "hafta") haftaCiz(); else if (id === "spor") sporCiz(); else if (id === "gundem") gundemCiz(); }
     for (const b of $("altNav").children) b.classList.toggle("on", b.dataset.s === id);
     for (const s of document.querySelectorAll(".sekme")) s.classList.toggle("on", s.id === "s-" + id);
     window.scrollTo(0, 0);
@@ -208,7 +211,7 @@
   $("avatarBtn").onclick = () => sekmeAc("ayar");
 
   /* ---------- çizim ---------- */
-  function ciz() { if (!slug) return; ustCiz(); bugunCiz(); haftaCiz(); netCiz(); okuCiz(); kitapCiz(); sporCiz(); beslenmeCiz(); $("surum").textContent = "Karaambar Kamyoncular Derneği · " + SURUM; }
+  function ciz() { if (!slug) return; ustCiz(); bugunCiz(); haftaCiz(); netCiz(); okuCiz(); kitapCiz(); sporCiz(); beslenmeCiz(); sinavCiz(); $("surum").textContent = "Karaambar Kamyoncular Derneği · " + SURUM; }
 
   function ustCiz() {
     const p = P[slug], m = simdiDk();
@@ -218,13 +221,16 @@
     const k = (p.tur === "yks" || p.tur === "karma") ? PR.kalan(bugun()) : null;
     $("kalan").innerHTML = k ? "<b>" + k + "</b> · " + GUNLER[PR.haftaGunu(bugun())] : GUNLER[PR.haftaGunu(bugun())] + " · " + PR.haftaNo(bugun()) + ". hafta";
     const c = p.cumleler; $("sozMetin").textContent = c[PR.gunNo(bugun()) % c.length];
+    rozetYaz();
   }
 
   function isaretli(g, b) { return !!(V.isaret[g] || {})[b.s]; }
+  let sonTik = null;   // az önce işaretlenen blok: tik animasyonu yalnız ona
   function isaretle(g, b, durum) {
     V.isaret[g] = V.isaret[g] || {};
-    if (durum) V.isaret[g][b.s] = 1; else delete V.isaret[g][b.s];
+    if (durum) { V.isaret[g][b.s] = 1; sonTik = { k: g + b.s, t: Date.now() }; } else delete V.isaret[g][b.s];
     kaydet(); bugunCiz(); haftaCiz();
+    if (durum) { rozetKontrol(); const y = gunYuzde(g); if (y.t && y.y === y.t) tost("Gün tamam. Helal."); }
   }
 
   function bugunCiz() {
@@ -256,7 +262,10 @@
     // haftalık ilerleme: cezalandırmaz, sadece gösterir
     const hb = haftaBasi(g); let top = 0, yap = 0;
     for (let i = 0; i < 7; i++) { const gg = gunEkle(hb, i), bl = PR.gunluk(slug, gg).filter((b) => b.say); top += bl.length; yap += bl.filter((b) => isaretli(gg, b)).length; }
-    $("haftaIlerleme").innerHTML = top ? "<span>Bu hafta</span><div class=\"cubuk\"><i style=\"width:" + Math.round(yap / top * 100) + "%\"></i></div><b>" + yap + "/" + top + "</b>" : "";
+    const sr = seri(), sonra = ROZETLER.find((x) => x > sr);
+    $("haftaIlerleme").innerHTML = (top ? "<span>Bu hafta</span><div class=\"cubuk\"><i style=\"width:" + Math.round(yap / top * 100) + "%\"></i></div><b>" + yap + "/" + top + "</b>" : "") +
+      '<em class="seri" title="%70 ve üstü biten günler üst üste">Seri ' + sr + (sonra ? " · " + sonra + YONE[sonra] + " " + (sonra - sr) : "") + "</em>";
+    odakCiz(g, su, m); haftaOzetCiz(g, m); gundemKartCiz(g);
 
     plan3Ciz(g); sporBugunCiz(g);
     $("profilNot").hidden = !p.not; $("profilNot").textContent = p.not || "";
@@ -267,7 +276,7 @@
       const [ust, alt] = b.ad.includes(" · ") && !b.say ? [b.ad.split(" · ")[0], b.ad.split(" · ").slice(1).join(" · ")] : [b.ad, ""];
       li.innerHTML = '<span class="sa">' + b.s + '</span><span class="ad"><b>' + kac(ust) + "</b><small>" + (alt ? kac(alt) + " · " : "") + b.s + "–" + b.b + "</small></span>";
       if (b.say) {
-        const t = el("button", "tik" + (isaretli(g, b) ? " on" : ""), "✓");
+        const t = el("button", "tik" + (isaretli(g, b) ? " on" : "") + (sonTik && sonTik.k === g + b.s && Date.now() - sonTik.t < 1200 && isaretli(g, b) ? " pop" : ""), "✓");
         t.setAttribute("aria-label", b.ad + " bitti mi");
         t.onclick = () => isaretle(g, b, !isaretli(g, b));
         li.appendChild(t);
@@ -345,6 +354,7 @@
       }
     }
     $("hedefKart").innerHTML = h;
+    tahminCiz(); defterCiz(); sinavSecCiz();
 
     const f = $("denemeForm");
     if (!f.dataset.kuruldu) {
@@ -501,6 +511,313 @@
     h += '<p class="ince">Genel bir sporcu beslenme düzenidir, diyetisyen programı değildir. Halsizlik, baş dönmesi ya da kramp olursa bir uzmana danış.</p>';
     k.innerHTML = h;
   }
+
+  /* =====================================================================
+     275'ten gelenler: seri ve rozetler, odak sayacı, Pazar özeti, ikon rozeti,
+     gidiş ve tahmin, deneme sayacı, yanlış defteri, gündem.
+     ===================================================================== */
+  const yksMi = () => { const t = P[slug].tur; return t === "yks" || t === "karma"; };
+  function gunYuzde(g) {
+    const bl = PR.gunluk(slug, g).filter((b) => b.say), y = bl.filter((b) => isaretli(g, b)).length;
+    return { y, t: bl.length, pct: bl.length ? Math.round(y * 100 / bl.length) : 0, eksik: bl.filter((b) => !isaretli(g, b)) };
+  }
+
+  /* ---------- seri: günün %70'i biten günler üst üste; işsiz gün (izin) seriyi bozmaz ---------- */
+  const ROZETLER = [3, 7, 14, 21, 30, 50, 75, 100, 150, 200];
+  const YONE = { 3: "'e", 7: "'ye", 14: "'e", 21: "'e", 30: "'a", 50: "'ye", 75: "'e", 100: "'e", 150: "'ye", 200: "'e" };   // 7'ye, 30'a …
+  function seri() {
+    const b = bugun(); let n = 0;
+    const p0 = gunYuzde(b); if (p0.t && p0.pct >= 70) n++;
+    let d = gunEkle(b, -1);
+    for (let i = 0; i < 400 && d >= PR.BASLANGIC; i++) {
+      const p = gunYuzde(d);
+      if (p.t && p.pct < 70) break;
+      if (p.t) n++;
+      d = gunEkle(d, -1);
+    }
+    return n;
+  }
+  function enUzunSeri() {
+    let d = PR.BASLANGIC, n = 0, en = 0; const b = bugun();
+    while (d <= b) { const p = gunYuzde(d); if (p.t) { if (p.pct >= 70) { n++; en = Math.max(en, n); } else if (d !== b) n = 0; } d = gunEkle(d, 1); }
+    return en;
+  }
+  function rozetKontrol() {
+    const r = ROZETLER.filter((x) => x <= seri()).pop(); if (!r) return;
+    if (r > (V.rozet_son || 0)) { V.rozet_son = r; kaydet(); setTimeout(() => tost(r + " gün üst üste. Rozet senin."), 900); }
+  }
+
+  /* ---------- ikon rozeti: YKS'lilerde kalan hafta (son haftada gün); öbürlerinde boş ---------- */
+  let sonRozet = null;
+  function rozetYaz() {
+    if (!("setAppBadge" in navigator)) return;
+    let n = 0;
+    if (yksMi()) { const g = PR.gunNo(PR.SINAV) - PR.gunNo(bugun()); n = g <= 0 ? 0 : g >= 7 ? Math.floor(g / 7) : g; }
+    if (n === sonRozet) return; sonRozet = n;
+    try { (n > 0 ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(() => {}); } catch (e) {}
+  }
+
+  /* ---------- odak sayacı: şu anki bloğun sonuna kadar sayar, bitince bloğu işaretler ---------- */
+  const odakAnahtar = () => "st-odak:" + slug;
+  let odakTik = null;
+  function odakOku() { try { return JSON.parse(localStorage.getItem(odakAnahtar()) || "null"); } catch (e) { return null; } }
+  function odakBitir(o, tamam) {
+    try { localStorage.removeItem(odakAnahtar()); } catch (e) {}
+    clearInterval(odakTik); odakTik = null;
+    if (tamam) {
+      const b = PR.gunluk(slug, o.gun).find((x) => x.s === o.s && x.say);
+      if (b && !isaretli(o.gun, b)) isaretle(o.gun, b, true);
+      try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (e) {}
+      tost(o.ad + " bitti, işaretlendi.");
+      try { if (document.hidden && window.Notification && Notification.permission === "granted") navigator.serviceWorker.ready.then((r) => r.showNotification("Karaambar", { body: "Süre doldu.", tag: "odak", icon: "icons/ikon-192.png" })); } catch (e) {}
+    }
+    bugunCiz();
+  }
+  function odakCiz(g, su, m) {
+    const k = $("simdi"); let o = odakOku();
+    if (o && o.gun !== g) { try { localStorage.removeItem(odakAnahtar()); } catch (e) {} o = null; }
+    const d = el("div", "odak");
+    if (o) {
+      const kal = Math.round((o.bit - Date.now()) / 1000);
+      if (kal <= 0) { setTimeout(() => odakBitir(o, true), 0); return; }
+      d.classList.add("calisiyor");
+      d.innerHTML = '<span class="osay" id="odakSay"></span><span class="oad">Sayaç açık · bitince işaretlenir</span>';
+      const dur = el("button", "btn ikincil kucuk", "Durdur"); dur.type = "button"; dur.onclick = () => odakBitir(o, false);
+      d.appendChild(dur); k.appendChild(d);
+      const yaz = () => { const s = Math.round((o.bit - Date.now()) / 1000), e = $("odakSay"); if (s <= 0) return odakBitir(o, true); if (e) e.textContent = (s >= 3600 ? Math.floor(s / 3600) + ":" + PR.p2(Math.floor(s % 3600 / 60)) : Math.floor(s / 60)) + ":" + PR.p2(s % 60); };
+      yaz(); clearInterval(odakTik); odakTik = setInterval(yaz, 1000);
+      return;
+    }
+    if (!su || !su.say || su.tur === "spor" || isaretli(g, su)) return;
+    const kalan = PR.dk(su.b) - m; if (kalan < 5) return;
+    const bs = el("button", "btn ikincil kucuk", "Sayacı başlat · " + sure(kalan)); bs.type = "button";
+    bs.onclick = () => {
+      const bit = Date.now() + kalan * 60000 - (new Date().getSeconds()) * 1000;
+      try { localStorage.setItem(odakAnahtar(), JSON.stringify({ gun: g, s: su.s, ad: su.ad, bit })); } catch (e) {}
+      bugunCiz();
+    };
+    d.appendChild(bs); k.appendChild(d);
+  }
+
+  /* ---------- Pazar akşamı (ve Pazartesi öğlene kadar): haftanın özeti ---------- */
+  function haftaHesap(hb) {
+    const b = bugun(); let y = 0, t = 0; const gunler = [], eksik = {};
+    for (let i = 0; i < 7; i++) {
+      const gg = gunEkle(hb, i);
+      if (gg > b || gg < PR.BASLANGIC) { gunler.push({ g: gg, yok: true }); continue; }
+      const p = gunYuzde(gg); y += p.y; t += p.t; gunler.push({ g: gg, pct: p.pct, t: p.t });
+      if (gg < b) for (const x of p.eksik) eksik[x.ad] = (eksik[x.ad] || 0) + 1;
+    }
+    const son = gunEkle(hb, 6);
+    return { y, t, pct: t ? Math.round(y * 100 / t) : null, gunler, eksik, dn: V.denemeler.filter((d) => d.tarih >= hb && d.tarih <= son) };
+  }
+  function haftaOzetCiz(g, m) {
+    const k = $("haftaOzet"), w = PR.haftaGunu(g);
+    const goster = (w === 0 && m >= 17 * 60) || (w === 1 && m < 12 * 60);
+    const hb = gunEkle(haftaBasi(g), w === 1 ? -7 : 0);
+    if (!goster || V.ozet_kapat === hb) { k.hidden = true; return; }
+    const h = haftaHesap(hb), o = haftaHesap(gunEkle(hb, -7));
+    const fark = h.pct != null && o.pct != null ? h.pct - o.pct : null;
+    const en = h.gunler.filter((x) => !x.yok && x.t).sort((a, b) => b.pct - a.pct)[0];
+    const ek = Object.keys(h.eksik).sort((a, b) => h.eksik[b] - h.eksik[a]).slice(0, 2);
+    let s = '<div class="houst"><span class="etk">' + (w === 1 ? "Geçen hafta" : "Haftanın özeti") + '</span><button class="hokapat" type="button" aria-label="Kapat">×</button></div>';
+    s += '<div class="hobuyuk"><b>' + (h.pct == null ? "–" : "%" + h.pct) + "</b><span>" + h.y + "/" + h.t + " blok" + (fark == null ? "" : ' · <em class="' + (fark >= 0 ? "art" : "az") + '">geçen haftaya göre ' + (fark >= 0 ? "+" : "") + fark + "</em>") + "</span></div>";
+    s += '<div class="hocubuk">' + h.gunler.map((x) => '<i class="' + (x.yok ? "yok" : "") + '"><u style="height:' + (x.yok ? 0 : Math.max(4, x.pct)) + '%"></u><small>' + KISA[PR.haftaGunu(x.g)] + "</small></i>").join("") + "</div>";
+    const satir = (a, b) => '<div class="hosatir"><span>' + a + "</span><b>" + kac(b) + "</b></div>";
+    if (en) s += satir("En iyi gün", KISA[PR.haftaGunu(en.g)] + " %" + en.pct);
+    s += satir("En çok atlanan", ek.length ? ek.map((a) => a + " (" + h.eksik[a] + ")").join(" · ") : "yok");
+    if (yksMi()) s += satir("Denemeler", h.dn.length ? h.dn.map((d) => d.tur + " " + fmt(Object.values(d.netler).reduce((a, b) => a + b, 0))).join(" · ") : "girilmedi");
+    s += satir("Seri", seri() + " gün · en uzun " + enUzunSeri());
+    k.innerHTML = s; k.hidden = false;
+    k.querySelector(".hokapat").onclick = () => { V.ozet_kapat = hb; kaydet(); k.hidden = true; };
+  }
+
+  /* ---------- Netler: gidiş ve tahmin (son 8 denemenin eğimi, hedefe gereken eğim) ---------- */
+  const SORU = { TYT: 120, AYT: 80 };
+  function tahminCiz() {
+    const k = $("tahminKart"), p = P[slug]; if (!p.hedef) { k.hidden = true; return; }
+    k.hidden = false;
+    let s = '<span class="etk">Gidiş ve tahmin</span>';
+    for (const tur of Object.keys(p.hedef)) {
+      const l = V.denemeler.filter((d) => d.tur === tur).sort((a, b) => a.tarih.localeCompare(b.tarih)).slice(-8);
+      const tepe = Object.values(p.hedef[tur]).reduce((a, b) => a + b, 0);
+      s += '<div class="grup">' + tur + " · hedef " + tepe + "</div>";
+      if (l.length < 3) { s += '<p class="ince">Tahmin için ' + (3 - l.length) + " deneme daha gerek (" + l.length + "/3).</p>"; continue; }
+      const xs = l.map((d) => PR.gunNo(d.tarih)), ys = l.map((d) => Object.values(d.netler).reduce((a, b) => a + b, 0)), n = l.length;
+      const mx = xs.reduce((a, b) => a + b, 0) / n, my = ys.reduce((a, b) => a + b, 0) / n;
+      let pay = 0, payda = 0; xs.forEach((x, i) => { pay += (x - mx) * (ys[i] - my); payda += (x - mx) * (x - mx); });
+      const egim = payda > 0 ? pay / payda : 0, son3 = ys.slice(-3).reduce((a, b) => a + b, 0) / 3;
+      const kalanGun = Math.max(7, PR.gunNo(PR.SINAV) - PR.gunNo(bugun())), kalanHafta = kalanGun / 7;
+      const gerek = (tepe - son3) / kalanHafta, haftalik = egim * 7;
+      const uzat = Math.max(0, Math.min(SORU[tur] || 120, son3 + egim * (PR.gunNo(PR.SINAV) - xs[n - 1])));
+      const iyi = son3 >= tepe || haftalik >= gerek - 0.05, erken = n < 5;
+      s += '<div class="thg"><div><span>Son 3 ortalama</span><b>' + fmt(Math.round(son3 * 10) / 10) + '</b></div><div class="' + (haftalik < 0 ? "kotu" : "") + '"><span>Gidişin</span><b>' + (haftalik >= 0 ? "+" : "") + fmt(Math.round(haftalik * 100) / 100) + "/hf</b></div>" +
+        "<div><span>Gereken</span><b>" + (son3 >= tepe ? "hedefte" : "+" + fmt(Math.round(gerek * 100) / 100) + "/hf") + '</b></div><div class="' + (erken ? "" : iyi ? "iyi" : "kotu") + '"><span>Bu gidişle</span><b>' + (erken ? "erken" : "≈ " + Math.round(uzat)) + "</b></div></div>";
+      s += '<p class="ince">' + (erken ? "Tahmin için 5 deneme lazım, " + n + " var. Şimdilik bak: gidişin gerekenin üstünde mi?"
+        : iyi ? "Gidiş yeterli; bozma." : haftalik <= 0 ? "Net artmıyor. Aynı çalışma aynı sonucu verir; yanlış defterindeki en çok hata yapılan konulara dön." : "Hız yetmiyor: haftada " + fmt(Math.round((gerek - haftalik) * 100) / 100) + " net açık var.") +
+        (erken ? "" : " Düz çizgi uzatmasıdır; net yükseldikçe artış yavaşlar, rakam iyimser tarafta kalır.") + "</p>";
+    }
+    k.innerHTML = s;
+  }
+
+  /* ---------- deneme sayacı: ekranda yalnız süre kalır; bitince net girişine geçer ---------- */
+  const SURE = { TYT: 165, AYT: 180 };
+  const sinavAnahtar = () => "st-sinav:" + slug;
+  let sinavTik = null, sinavKilit = null;
+  function sinavOku() { try { return JSON.parse(localStorage.getItem(sinavAnahtar()) || "null"); } catch (e) { return null; } }
+  function sinavSecCiz() {
+    const k = $("sinavSec"), p = P[slug]; if (!p.hedef) return;
+    k.innerHTML = '<p class="ince">Gerçek süre başlar, ekranda yalnız sayaç kalır. Bitirince netlerini gir.</p>';
+    for (const tur of Object.keys(p.hedef)) { const b = el("button", "btn", tur + " · " + SURE[tur] + " dk"); b.type = "button"; b.onclick = () => { try { localStorage.setItem(sinavAnahtar(), JSON.stringify({ bas: Date.now(), dk: SURE[tur], tur })); } catch (e) {} k.hidden = true; sinavCiz(); }; k.appendChild(b); }
+  }
+  function sinavCiz() {
+    const o = $("sinavMod"), d = slug ? sinavOku() : null;
+    if (!d) { o.hidden = true; clearInterval(sinavTik); sinavTik = null; if (sinavKilit && sinavKilit.release) { try { sinavKilit.release(); } catch (e) {} } sinavKilit = null; return; }
+    o.hidden = false;
+    const gecen = (Date.now() - d.bas) / 1000, top = d.dk * 60, kal = Math.max(0, top - gecen);
+    $("smSayac").textContent = kal <= 0 ? "Süre doldu" : Math.floor(kal / 3600) + ":" + PR.p2(Math.floor(kal % 3600 / 60)) + ":" + PR.p2(Math.floor(kal % 60));
+    $("smBar").style.width = Math.min(100, gecen * 100 / top) + "%";
+    const bas = new Date(d.bas), bit = new Date(d.bas + top * 1000);
+    $("smAlt").textContent = d.tur + " · " + PR.p2(bas.getHours()) + ":" + PR.p2(bas.getMinutes()) + " → " + PR.p2(bit.getHours()) + ":" + PR.p2(bit.getMinutes());
+    $("smBitir").textContent = kal <= 0 ? "Netleri gir" : "Bitir";
+    o.classList.toggle("son", kal > 0 && kal <= 600);
+    if (!sinavTik) sinavTik = setInterval(sinavCiz, 1000);
+    if (!sinavKilit && navigator.wakeLock && !document.hidden) { sinavKilit = 1; navigator.wakeLock.request("screen").then((k) => { sinavKilit = k; }).catch(() => { sinavKilit = null; }); }
+  }
+  let sinavOnay = 0;
+  $("sinavAc").onclick = () => { const k = $("sinavSec"); k.hidden = !k.hidden; };
+  $("smBitir").onclick = () => {
+    const d = sinavOku(); if (!d) return;
+    const doldu = (Date.now() - d.bas) / 1000 >= d.dk * 60;
+    if (!doldu && Date.now() - sinavOnay > 4000) { sinavOnay = Date.now(); $("smBitir").textContent = "Emin misin? Bir daha bas"; return; }
+    try { localStorage.removeItem(sinavAnahtar()); } catch (e) {}
+    sinavOnay = 0; sinavCiz(); sekmeAc("net");
+    const f = $("denemeForm"); $("denemeEkle").open = true;
+    if (f.tur) { f.tur.value = d.tur; f.tur.onchange && f.tur.onchange(); } if (f.tarih) f.tarih.value = bugun();
+    setTimeout(() => $("denemeEkle").scrollIntoView({ block: "start" }), 50);
+  };
+
+  /* ---------- yanlış defteri: her yanlış ve boş için bir satır; konu 1, 3, 7, 21 gün sonra tekrar gelir ---------- */
+  const TEKRAR = [1, 3, 7, 21];
+  let defterHarita = null;
+  function dersler() { const p = P[slug]; const l = []; for (const tur of Object.keys(p.hedef || {})) for (const k of Object.keys(window.Defter.KONULAR)) if (k.indexOf(tur + " ") === 0) l.push(k); return l; }
+  function tekrarHesap() {
+    const b = bugun(), m = {}, T = V.tekrar || {}, vadesi = []; let yarin = 0, biten = 0;
+    for (const h of V.hatalar || []) { const k = h.ders + "||" + h.konu; if (!m[k]) m[k] = { k, ders: h.ders, konu: h.konu, adet: 0, son: h.tarih }; m[k].adet++; if (h.tarih > m[k].son) m[k].son = h.tarih; }
+    for (const k in m) {
+      const r = m[k], t = T[k] || { adim: 0, son: "" }; let adim = t.adim, taban = t.son;
+      if (!taban || r.son > taban) { adim = 0; taban = r.son; }
+      if (adim >= TEKRAR.length) { biten++; continue; }
+      r.adim = adim; r.vade = gunEkle(taban, TEKRAR[adim]);
+      if (r.vade <= b) vadesi.push(r); else if (r.vade === gunEkle(b, 1)) yarin++;
+    }
+    vadesi.sort((a, c) => a.vade.localeCompare(c.vade) || c.adet - a.adet);
+    return { vadesi, yarin, biten, toplam: Object.keys(m).length };
+  }
+  function defterCiz() {
+    const k = $("defter"); if (!yksMi() || !window.Defter) { k.innerHTML = ""; return; }
+    if (k.contains(document.activeElement) && /SELECT|INPUT/.test(document.activeElement.tagName)) return;
+    V.hatalar = V.hatalar || []; V.tekrar = V.tekrar || {};
+    const D = window.Defter, ds = dersler();
+    k.innerHTML = "";
+    const kart = el("div", "kart defter");
+    kart.innerHTML = '<span class="etk">Yanlış defteri</span><p class="ince">Her yanlış ve boş için bir satır. Neden kısmını boş geçme: konu mu eksik, dikkat mi, süre mi, onu bu söyler.</p>';
+    const f = el("form", "dform");
+    f.innerHTML = '<label>Ders<select name="ders">' + ds.map((d) => "<option>" + d + "</option>").join("") + '</select></label><label>Konu<select name="konu"></select></label><label>Neden<select name="neden">' + D.NEDENLER.map((x) => "<option>" + x + "</option>").join("") + '</select></label><button class="btn">Ekle</button>';
+    const konular = () => { f.konu.innerHTML = (D.KONULAR[f.ders.value] || []).map((x) => "<option>" + kac(x) + "</option>").join(""); };
+    f.ders.onchange = konular; konular();
+    if (defterCiz.son) { if (ds.includes(defterCiz.son.ders)) { f.ders.value = defterCiz.son.ders; konular(); } f.neden.value = defterCiz.son.neden; }
+    f.onsubmit = (e) => {
+      e.preventDefault();
+      V.hatalar.push({ id: Date.now(), tarih: bugun(), ders: f.ders.value, konu: f.konu.value, neden: f.neden.value });
+      defterCiz.son = { ders: f.ders.value, neden: f.neden.value };
+      kaydet(); defterCiz(); tost("Deftere yazıldı.");
+    };
+    kart.appendChild(f); k.appendChild(kart);
+
+    // bugün tekrar
+    const r = tekrarHesap(), tk = el("div", "kart tekrar");
+    tk.innerHTML = '<span class="etk">Bugün tekrar' + (r.vadesi.length ? " · " + r.vadesi.length + " konu" : "") + "</span>";
+    if (!r.toplam) tk.innerHTML += '<p class="ince">Deftere hata girdikçe o konular 1, 3, 7 ve 21 gün sonra burada tekrar için çıkar.</p>';
+    else if (!r.vadesi.length) tk.innerHTML += '<p class="ince">Bugün tekrar yok.' + (r.yarin ? " Yarın " + r.yarin + " konu bekliyor." : "") + (r.biten ? " " + r.biten + " konu dört tekrarı bitirdi." : "") + "</p>";
+    for (const x of r.vadesi) {
+      const gec = PR.gunNo(bugun()) - PR.gunNo(x.vade);
+      const s = el("div", "tkr", "<div><b>" + kac(x.konu) + "</b><small>" + kac(x.ders) + " · " + x.adet + " hata · " + (x.adim + 1) + ". tekrar" + (gec > 0 ? " · " + gec + " gün gecikti" : "") + "</small></div>");
+      const b = el("button", "btn ikincil kucuk", "Tekrar ettim"); b.type = "button";
+      b.onclick = () => { V.tekrar[x.k] = { adim: x.adim + 1, son: bugun() }; kaydet(); defterCiz(); };
+      s.appendChild(b); tk.appendChild(s);
+    }
+    k.appendChild(tk);
+    if (!V.hatalar.length) return;
+
+    // en çok hata ve neden dağılımı
+    const m = {}, nm = {};
+    for (const h of V.hatalar) { const kk = h.ders + "||" + h.konu; m[kk] = m[kk] || { ders: h.ders, konu: h.konu, n: 0 }; m[kk].n++; nm[h.neden] = (nm[h.neden] || 0) + 1; }
+    const en = Object.values(m).sort((a, b) => b.n - a.n).slice(0, 8), enc = Math.max(...Object.values(nm));
+    const ist = el("div", "kart dist");
+    ist.innerHTML = '<span class="etk">En çok hata · ' + V.hatalar.length + " kayıt</span>" + en.map((x) => '<div class="dsat"><span><b>' + kac(x.konu) + "</b><small>" + kac(x.ders) + "</small></span><em>" + x.n + "</em></div>").join("") +
+      '<span class="etk" style="margin-top:12px">Neden</span>' + D.NEDENLER.filter((x) => nm[x]).sort((a, b) => nm[b] - nm[a]).map((x) => '<div class="dned"><span>' + kac(x) + '</span><i><u style="width:' + Math.round(nm[x] * 100 / enc) + '%"></u></i><em>' + Math.round(nm[x] * 100 / V.hatalar.length) + "%</em></div>").join("");
+    k.appendChild(ist);
+
+    // konu haritası: her kare bir konu, koyulaştıkça hata çok
+    const hr = el("details", "kart harita"); hr.open = defterHarita === true;
+    hr.ontoggle = () => { defterHarita = hr.open; };
+    let hs = '<summary><span class="etk">Konu haritası</span></summary><p class="ince" id="haritaBilgi">Bir kareye dokun: konu ve hata sayısı burada.</p>';
+    for (const d of ds) {
+      const lst = D.KONULAR[d] || [], top = lst.reduce((a, x) => a + ((m[d + "||" + x] || {}).n || 0), 0);
+      hs += '<div class="hrs"><b>' + kac(d) + "<small>" + (top || "–") + '</small></b><div class="hrk">' + lst.map((x) => { const n = (m[d + "||" + x] || {}).n || 0; return '<i class="l' + (n === 0 ? 0 : n === 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4) + '" data-b="' + kac(d + " · " + x + ": " + (n ? n + " hata" : "hata yok")) + '"></i>'; }).join("") + "</div></div>";
+    }
+    hr.innerHTML = hs;
+    hr.onclick = (e) => { const i = e.target.closest("i[data-b]"); if (i) $("haritaBilgi").textContent = i.dataset.b; };
+    k.appendChild(hr);
+  }
+
+  /* ---------- gündem: haberler tek yerde; günün işinin %60'ı bitince açılır, günde 15 dakika ---------- */
+  const GUNDEM = { oran: 0.6, dk: 15 };
+  const HESAPLAR = [["İbrahim Haskoloğlu · X", "https://x.com/haskologlu"], ["Telegram", "https://t.me/s/ibrahimhaskologlu"], ["YouTube", "https://www.youtube.com/ibrahimhaskologlu"]];
+  let gundemVeri = null, gundemZaman = 0, gundemSon = Date.now();
+  function gundemOkuma() { const g = bugun(); return V.gundem && V.gundem.gun === g ? V.gundem : { gun: g, sn: 0 }; }
+  function gundemDurum() {
+    const p = gunYuzde(bugun()), gerek = Math.ceil(p.t * GUNDEM.oran);
+    if (p.t && p.y < gerek) return { acik: false, neden: "Gündem günün işinin çoğu bitince açılır: " + (gerek - p.y) + " blok daha (" + p.y + "/" + p.t + ")." , kalanBlok: gerek - p.y };
+    const r = gundemOkuma();
+    if (r.sn >= GUNDEM.dk * 60) return { acik: false, neden: "Bugünlük gündem süren doldu (" + GUNDEM.dk + " dk). Yarın yine burada." };
+    return { acik: true, kalan: GUNDEM.dk * 60 - r.sn };
+  }
+  function gundemKartCiz() {
+    const k = $("gundemKart"), d = gundemDurum();
+    k.innerHTML = '<span class="etk">Gündem</span><b>' + (d.acik ? "Açık · " + Math.ceil(d.kalan / 60) + " dk" : d.kalanBlok ? d.kalanBlok + " blok sonra açılır" : "Bugünlük bitti") + "</b><i>›</i>";
+    k.classList.toggle("kilitli", !d.acik);
+    k.onclick = () => sekmeAc("gundem");
+  }
+  function zamanFarki(iso) { const d = Math.round((Date.now() - new Date(iso).getTime()) / 60000); return d < 1 ? "şimdi" : d < 60 ? d + " dk" : d < 1440 ? Math.round(d / 60) + " sa" : Math.round(d / 1440) + " gün"; }
+  function gundemCiz(zorla) {
+    const liste = $("gundemListe"), alt = $("gundemAlt"), hs = $("hesaplar"), d = gundemDurum();
+    hs.innerHTML = d.acik ? HESAPLAR.map(([a, u]) => '<a class="hesap" target="_blank" rel="noopener" href="' + u + '">' + kac(a) + "</a>").join("") : "";
+    if (!d.acik) { liste.innerHTML = '<div class="kart"><p class="ince">' + kac(d.neden) + "</p></div>"; alt.textContent = "Kilitli."; return; }
+    alt.textContent = "Bugün kalan süre: " + Math.ceil(d.kalan / 60) + " dk";
+    if (gundemVeri && !zorla && Date.now() - gundemZaman < 5 * 60000) return gundemYaz();
+    liste.innerHTML = '<p class="ince">Yükleniyor…</p>';
+    fetch("api/gundem", { cache: "no-store" }).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then((v) => { gundemVeri = v; gundemZaman = Date.now(); gundemYaz(); })
+      .catch(() => { liste.innerHTML = '<div class="kart"><p class="ince">Gündem yüklenemedi; bağlantını kontrol et.</p></div>'; });
+  }
+  function gundemYaz() {
+    const liste = $("gundemListe"), v = gundemVeri || { ogeler: [], kaynaklar: [] };
+    liste.innerHTML = v.ogeler.length ? "" : '<p class="ince">Kaynaklardan bir şey gelmedi.</p>';
+    for (const o of v.ogeler.slice(0, 60)) { const a = el("a", "kart haber"); a.href = o.link; a.target = "_blank"; a.rel = "noopener"; a.innerHTML = '<div class="hu"><b>' + kac(o.kaynak) + "</b><span>" + zamanFarki(o.zaman) + "</span></div><p>" + kac(o.metin) + "</p>"; liste.appendChild(a); }
+    const bozuk = (v.kaynaklar || []).filter((x) => !x.tamam).map((x) => x.ad);
+    if (bozuk.length) liste.appendChild(el("p", "ince", "Okunamayan kaynak: " + kac(bozuk.join(", "))));
+  }
+  $("gundemGeri").onclick = () => sekmeAc("bugun");
+  setInterval(() => {
+    const s = Date.now(), f = Math.round((s - gundemSon) / 1000); gundemSon = s;
+    if (!slug || document.hidden || f <= 0 || f > 15 || !$("s-gundem").classList.contains("on")) return;
+    if (!gundemDurum().acik) return;
+    const r = gundemOkuma(); r.sn += f; V.gundem = r;
+    if (r.sn % 30 < 5) kaydet(); else { try { localStorage.setItem(anahtar(), JSON.stringify(V)); } catch (e) {} }   // sunucuya 30 sn'de bir
+    const d = gundemDurum(); if (!d.acik) gundemCiz(); else $("gundemAlt").textContent = "Bugün kalan süre: " + Math.ceil(d.kalan / 60) + " dk";
+  }, 5000);
 
   /* ---------- bildirim ---------- */
   const standalone = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;

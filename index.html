@@ -69,11 +69,22 @@
   <section class="sekme on" id="s-bugun">
     <figure class="soz" id="soz"><blockquote id="sozMetin"></blockquote></figure>
     <div class="kart simdi" id="simdi"></div>
+    <div class="kart haftaozet" id="haftaOzet" hidden></div>
     <div class="kart plan3" id="plan3" hidden></div>
     <button class="kart sporbugun" id="sporBugun" hidden></button>
     <div class="ilerleme" id="haftaIlerleme"></div>
     <p class="not" id="profilNot" hidden></p>
     <ol class="bloklar" id="bloklar"></ol>
+    <button class="kart gundemkart" id="gundemKart"></button>
+  </section>
+
+  <section class="sekme" id="s-gundem">
+    <button class="geri" id="gundemGeri">‹ Bugün</button>
+    <h2 class="baslik">Gündem</h2>
+    <p class="ince" id="gundemAlt"></p>
+    <div class="hesaplar" id="hesaplar"></div>
+    <div id="gundemListe"></div>
+    <p class="ince">Tek pencere: gün içinde olan biteni buradan gör, başka uygulamaya kayma. Günün işinin çoğu bitmeden açılmaz; günde 15 dakika.</p>
   </section>
 
   <section class="sekme" id="s-hafta">
@@ -82,12 +93,16 @@
   </section>
 
   <section class="sekme" id="s-net">
+    <div class="netust"><button class="btn ikincil kucuk" id="sinavAc" type="button">Deneme sayacı</button></div>
+    <div class="kart sinavsec" id="sinavSec" hidden></div>
     <div class="kart hedef" id="hedefKart"></div>
+    <div class="kart tahmin" id="tahminKart"></div>
     <details class="kart ekle" id="denemeEkle">
       <summary>+ Deneme ekle</summary>
       <form id="denemeForm"></form>
     </details>
     <div id="denemeler"></div>
+    <div id="defter"></div>
   </section>
 
   <section class="sekme" id="s-oku">
@@ -132,9 +147,13 @@
 </main>
 
 <div class="tost" id="tost" role="status" aria-live="polite"></div>
+<div class="sinavmod" id="sinavMod" hidden>
+  <div class="smk"><div class="sms" id="smSayac"></div><div class="smb"><i id="smBar"></i></div><div class="sma" id="smAlt"></div><button class="btn" id="smBitir" type="button">Bitir</button></div>
+</div>
 
 <script src="lib/supabase.js"></script>
 <script src="profiller.js"></script>
+<script src="konular.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

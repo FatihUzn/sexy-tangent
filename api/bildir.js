@@ -26,7 +26,9 @@ function secim(slug, z, ozet) {
     const izin = bl.some((b) => b.tur === "izin");
     const title = (p.tur === "yks" || p.tur === "karma") ? (PR.kalan(z.gun) || "Günaydın") : "Günaydın";
     const body = izin ? "Bugün izin günün. Dinlen, yarın devam." : p.bSabah[n % p.bSabah.length] + (say ? " Bugün " + say + " blok." : "");
-    out.push({ title, body, tag: "sabah" });
+    const m = { title, body, tag: "sabah" };
+    if (p.tur === "yks" || p.tur === "karma") { const g = PR.gunNo(PR.SINAV) - n; m.rozet = g <= 0 ? 0 : g >= 7 ? Math.floor(g / 7) : g; }   // ikondaki sayı: kalan hafta
+    out.push(m);
   }
   if (z.dilim === p.aksam) {
     const satir = p.bAksam[n % p.bAksam.length];
@@ -35,7 +37,7 @@ function secim(slug, z, ozet) {
       const y = ozet.yapilan, t = ozet.toplam;
       body = (y >= t ? y + "/" + t + ", tam gün. " : y + "/" + t + ". ") + satir;
     }
-    out.push({ title: "Gün sonu", body, tag: "aksam" });
+    out.push({ title: PR.haftaGunu(z.gun) === 0 ? "Hafta kapandı" : "Gün sonu", body: PR.haftaGunu(z.gun) === 0 ? body + " Haftanın özeti uygulamada." : body, tag: "aksam" });
   }
   return out;
 }
