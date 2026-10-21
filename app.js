@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v16";
+  const SURUM = "st-v17";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -147,7 +147,7 @@
     const p = P[slug], t = p.tur, l = [];
     l.push(["Hoş geldin " + p.ad, "Burası senin sayfan. Sadece sen görürsün: işaretlerin ve notların senin hesabında durur, başka profiller açamaz."]);
     l.push(["Bugün", "Üstteki kart şu an ne yapman gerektiğini söyler. Bir bloğu bitirince <b>✓ bitti</b>'ye bas ya da listedeki kutuyu işaretle. Kaçırdığın gün için ceza yok; haftalık çubuk sadece gösterir."]);
-    if (p.plan3) l.push(["Bugünün işleri", "Sabah gün planında işlerini yaz (3 satır hazır, '+ İş ekle' ile 8'e kadar), bitirdikçe işaretle. Hepsi bitince gün kazanılmıştır."]);
+    if (p.plan3 !== false) l.push(["Bugünün işleri", "Sabah gün planında işlerini yaz (3 satır hazır, '+ İş ekle' ile 8'e kadar), bitirdikçe işaretle. Hepsi bitince gün kazanılmıştır."]);
     l.push(["Hafta", "Haftanın tamamını tek ekranda görürsün: hangi gün ne var, kaçını bitirdin."]);
     if (t === "yks" || t === "karma") {
       l.push(["Netler", "Her denemeden sonra <b>+ Deneme ekle</b> ile netlerini gir. Hedefle yan yana görürsün; en çok açık olan ders kırmızı yanar."]);
@@ -281,7 +281,7 @@
   /* Günün işleri: sabah yazılır, gün içinde işaretlenir. Varsayılan 3; "+ İş ekle" ile en çok 8. */
   const IS_EN_AZ = 3, IS_EN_COK = 8;
   function plan3Ciz(g) {
-    const k = $("plan3"); if (!P[slug].plan3) { k.hidden = true; return; }
+    const k = $("plan3"); if (P[slug].plan3 === false) { k.hidden = true; return; }   // herkeste açık; kapatmak için profilde plan3: false
     k.hidden = false; V.plan = V.plan || {};
     const l = (V.plan[g] || []).slice();
     while (l.length < IS_EN_AZ) l.push({ t: "", ok: 0 });
