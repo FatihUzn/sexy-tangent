@@ -217,7 +217,7 @@
       rutin: [
         { g: her, s: "06:00", dk: 10, ad: "Kalk · bir bardak su" },
         { g: her, s: "06:10", dk: 30, ad: "Koşu · 30 dk hafif" },
-        { g: her, s: "07:45", dk: 15, ad: "Günü planla · 3 iş" },
+        { g: her, s: "07:45", dk: 15, ad: "Günü planla" },
         { g: her, s: "21:00", dk: 30, ad: "Okuma / dinleme · 30 dk" }
       ],
       pencere: {},
