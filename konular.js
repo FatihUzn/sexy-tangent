@@ -1,4 +1,4 @@
-/* Karaambar · yanlış defteri için konu listesi ve hata nedenleri (275'teki listeyle aynı). Yalnız uygulamanın içinde görünür. */
+/* Bozkurt Ordusu · yanlış defteri için konu listesi ve hata nedenleri (275'teki listeyle aynı). Yalnız uygulamanın içinde görünür. */
 (function (kok) {
 "use strict";
 var NEDENLER = ["Bilgi eksiği","Dikkatsizlik","Süre yetmedi","Soruyu yanlış okudum","İşlem hatası","Uzun yol / yanlış strateji","Boş — bilmiyordum","Boş — süre yoktu","Tereddüt ettim, değiştirdim"];
