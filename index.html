@@ -15,7 +15,7 @@
 <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="styles.css">
-<script>try{var g=localStorage.getItem("st-gorunum")||"oto";if(g!=="mermer"&&g!=="yol")g=(matchMedia("(prefers-color-scheme: dark)").matches?"yol":"mermer");document.documentElement.dataset.tema=g}catch(e){}</script>
+<script>try{var g=localStorage.getItem("st-gorunum")||"oto";if(["mermer","yol","al","kurt","uluyan","gok"].indexOf(g)<0)g=(matchMedia("(prefers-color-scheme: dark)").matches?"yol":"mermer");document.documentElement.dataset.tema=g}catch(e){}</script>
 </head>
 <body>
 <div class="desen" aria-hidden="true"></div>
@@ -186,6 +186,7 @@
       <div class="secim-ad">Görünüm</div>
       <div class="secim">
         <button data-g="oto">Otomatik</button><button data-g="mermer">Mermer</button><button data-g="yol">Gece Yolu</button>
+        <button data-g="al">Al Bayrak</button><button data-g="kurt">Altın Kurt</button><button data-g="uluyan">Uluyan Kurt</button><button data-g="gok">Gökyüzü</button>
       </div>
       <button class="satir" id="bildirimBtn"><span>Bildirimler</span><b id="bildirimDurum">Kapalı</b></button>
       <p class="ince" id="bildirimNot" hidden></p>
@@ -195,6 +196,7 @@
       <button class="satir" id="cikisBtn"><span>Profil değiştir / çıkış</span><b>›</b></button>
     </div>
     <p class="ince orta" id="surum"></p>
+    <p class="kaynak-not">Kurt çizimleri: game-icons.net (GameIcons), CC BY 3.0</p>
   </section>
 
   <nav class="alt" id="altNav"></nav>

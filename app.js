@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v20";
+  const SURUM = "st-v21";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -64,11 +64,11 @@
   }
   /* Görünüm: oto (gündüz Mermer, telefon koyu modda Gece Yolu) · mermer · yol. Telefonda saklanır, ders sayfaları da okur. */
   const KOYU = window.matchMedia("(prefers-color-scheme: dark)");
-  function gorunum() { let g = "oto"; try { g = localStorage.getItem("st-gorunum") || "oto"; } catch (e) {} return ["oto", "mermer", "yol"].includes(g) ? g : "oto"; }
+  function gorunum() { let g = "oto"; try { g = localStorage.getItem("st-gorunum") || "oto"; } catch (e) {} return ["oto", "mermer", "yol", "al", "kurt", "uluyan", "gok"].includes(g) ? g : "oto"; }
   function gorunumUygula() {
     const g = gorunum(), t = g === "oto" ? (KOYU.matches ? "yol" : "mermer") : g;
     document.documentElement.dataset.tema = t;
-    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = { mermer: "#E6F2F3", yol: "#111214" }[t];
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = { mermer: "#E6F2F3", yol: "#111214", al: "#9E0E18", kurt: "#1C0204", uluyan: "#060A18", gok: "#2F6FB0" }[t];
     for (const b of document.querySelectorAll(".secim button")) b.classList.toggle("on", b.dataset.g === g);
   }
   KOYU.addEventListener && KOYU.addEventListener("change", gorunumUygula);
@@ -78,7 +78,7 @@
   function avatar(e, s) { e.textContent = P[s].ad[0]; }
 
   /* ---------- ekranlar ---------- */
-  function goster(id) { for (const e of ["giris", "yeniSifre", "uyg"]) $(e).hidden = e !== id; window.scrollTo(0, 0); }
+  function goster(id) { for (const e of ["giris", "yeniSifre", "uyg"]) $(e).hidden = e !== id; document.documentElement.dataset.ekran = id; window.scrollTo(0, 0); }
 
   function girisCiz() {
     tema(null); goster("giris");
