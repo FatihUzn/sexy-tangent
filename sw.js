@@ -1,9 +1,10 @@
 /* Bozkurt Ordusu · servis çalışanı: kabuk önbellekte, ders sayfaları açıldıkça önbelleğe girer; bildirim gösterir. */
-const SURUM = "st-v20";
+const SURUM = "st-v21";
 const KABUK = ["./", "index.html", "styles.css", "app.js", "profiller.js", "konular.js", "sifre.js", "lib/supabase.js", "fonts/fonts.css",
   "fonts/inter-latin-wght-normal.woff2", "fonts/fraunces-latin-opsz-italic.woff2", "manifest.webmanifest",
   "icons/ikon-192.png", "icons/desen-bogaz.svg", "icons/desen-kat.svg", "icons/desen-galata.svg", "icons/desen-zirve.svg", "icons/desen-carsi.svg", "icons/desen-kurt.svg",
-  "icons/zemin-al.svg", "icons/zemin-kurt.svg", "icons/zemin-gok.svg"];
+  "icons/zemin-al.svg", "icons/zemin-kurt.svg", "icons/zemin-uluyan.svg", "icons/zemin-gok.svg",
+  "icons/zemin-al-uyg.svg", "icons/zemin-kurt-uyg.svg", "icons/zemin-uluyan-uyg.svg", "icons/zemin-gok-uyg.svg"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(SURUM).then((c) => c.addAll(KABUK)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((k) => Promise.all(k.filter((x) => x !== SURUM).map((x) => caches.delete(x)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", (e) => {

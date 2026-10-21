@@ -13,3 +13,4 @@ Arkadaşlar için tek site, Netflix gibi profil seçimi. Statik PWA + tek sunucu
 - Test: `node araclar/test.js`
 
 Bildirimlerde sınav, ders ya da okul adı geçmez (test bunu denetler).
+- Görünümler: Mermer, Gece Yolu ve dört asalet teması (Al Bayrak, Altın Kurt, Uluyan Kurt, Gökyüzü). Zeminler `python3 araclar/zeminler.py` ile üretilir (`icons/zemin-*.svg`). Kurt çizimleri game-icons.net (GameIcons), CC BY 3.0; kaynak `araclar/ikon/`.
