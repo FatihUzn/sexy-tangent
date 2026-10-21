@@ -1,6 +1,6 @@
 /* Karaambar Kamyoncular Derneği · servis çalışanı: kabuk önbellekte, ders sayfaları açıldıkça önbelleğe girer; bildirim gösterir. */
-const SURUM = "st-v17";
-const KABUK = ["./", "index.html", "styles.css", "app.js", "profiller.js", "lib/supabase.js", "fonts/fonts.css",
+const SURUM = "st-v18";
+const KABUK = ["./", "index.html", "styles.css", "app.js", "profiller.js", "konular.js", "lib/supabase.js", "fonts/fonts.css",
   "fonts/inter-latin-wght-normal.woff2", "fonts/fraunces-latin-opsz-italic.woff2", "manifest.webmanifest",
   "icons/ikon-192.png", "icons/desen-bogaz.svg", "icons/desen-kat.svg", "icons/desen-galata.svg", "icons/desen-zirve.svg"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(SURUM).then((c) => c.addAll(KABUK)).then(() => self.skipWaiting())); });
@@ -14,7 +14,8 @@ self.addEventListener("fetch", (e) => {
 });
 self.addEventListener("push", (e) => {
   let m = {}; try { m = e.data.json(); } catch (_) { m = { title: "Karaambar", body: e.data ? e.data.text() : "" }; }
-  e.waitUntil(self.registration.showNotification(m.title || "Karaambar", { body: m.body || "", tag: m.tag || "st", icon: "icons/ikon-192.png", badge: "icons/ikon-192.png" }));
+  const rozet = typeof m.rozet === "number" && "setAppBadge" in self.navigator ? (m.rozet > 0 ? self.navigator.setAppBadge(m.rozet) : self.navigator.clearAppBadge()).catch(() => {}) : Promise.resolve();
+  e.waitUntil(Promise.all([self.registration.showNotification(m.title || "Karaambar", { body: m.body || "", tag: m.tag || "st", icon: "icons/ikon-192.png", badge: "icons/ikon-192.png" }), rozet]));
 });
 self.addEventListener("notificationclick", (e) => {
   e.notification.close();
