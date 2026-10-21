@@ -151,6 +151,35 @@
     <div id="kitaplar"></div>
   </section>
 
+  <section class="sekme" id="s-duzen">
+    <button class="geri" id="duzenGeri">‹ Geri</button>
+    <h2 class="baslik">Günüm</h2>
+    <p class="ince" id="duzenAlt">Gününü saat saat yaz. Bugün ekranı, "şu an" kartı ve hatırlatmalar buna göre çalışır.</p>
+    <div class="gunsec" id="duzenGunler"></div>
+    <ol class="bloklar duzenliste" id="duzenListe"></ol>
+    <form class="kart duzenform" id="duzenForm" autocomplete="off">
+      <span class="etk" id="duzenFormBas">Ekle</span>
+      <input type="text" name="ad" maxlength="40" placeholder="Ne? (Dükkân, toplantı, spor…)" aria-label="Ne" required>
+      <div class="dsaat"><label>Başlar<input type="time" name="s" required></label><label>Biter<input type="time" name="b" required></label></div>
+      <label class="dsec">Türü<select name="tur">
+        <option value="gorev">Yapılacak: bitince ✓ işaretlenir</option>
+        <option value="sabit">Sabit: dükkân, okul, toplantı</option>
+        <option value="spor">Spor</option>
+      </select></label>
+      <label class="dsec">Hangi günler<select name="tekrar">
+        <option value="gun">Sadece seçili gün</option>
+        <option value="hi">Hafta içi (Pzt–Cum)</option>
+        <option value="pc">Pazartesi–Cumartesi</option>
+        <option value="hs">Hafta sonu</option>
+        <option value="her">Her gün</option>
+      </select></label>
+      <p class="hata" id="duzenHata" hidden></p>
+      <button class="btn" id="duzenKaydet">Ekle</button>
+      <button type="button" class="gec" id="duzenIptal" hidden>Vazgeç</button>
+    </form>
+    <button type="button" class="gec orta" id="duzenSifirla">Baştaki düzene dön</button>
+  </section>
+
   <section class="sekme" id="s-ayar">
     <h2 class="baslik">Ayarlar</h2>
     <div class="kart liste">
@@ -160,6 +189,7 @@
       </div>
       <button class="satir" id="bildirimBtn"><span>Bildirimler</span><b id="bildirimDurum">Kapalı</b></button>
       <p class="ince" id="bildirimNot" hidden></p>
+      <button class="satir" id="duzenBtn" hidden><span>Günüm: saat saat düzenim</span><b>›</b></button>
       <button class="satir" id="tanitimBtn"><span>Nasıl kullanılır</span><b>›</b></button>
       <button class="satir" id="sifreBtn"><span>Şifremi değiştir</span><b>›</b></button>
       <button class="satir" id="cikisBtn"><span>Profil değiştir / çıkış</span><b>›</b></button>

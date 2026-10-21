@@ -174,8 +174,8 @@
     fikret: {
       ad: "Fikret", tur: "is", renk: "#7A5C1E", renk2: "#B08A3E", desen: "carsi",
       etiket: "İş adamı",
-      sabah: 450, aksam: 1350, blokDk: 30, pano: true,
-      not: "Dükkân saatlerini ve spor günlerini tahminen koyduk; tutmuyorsa Fati'ye söyle, düzeltelim.",
+      sabah: 450, aksam: 1350, blokDk: 30, pano: true, kendiDuzen: true,
+      not: "Saatler tahmini; Ayar → Günüm'den kendi gününü saat saat yaz.",
       sabit: [
         { g: [1, 2, 3, 4, 5, 6], s: "08:30", b: "19:00", ad: "Dükkân", tur: "is" },
         { g: [2, 4, 6], s: "20:00", b: "21:00", ad: "Spor", tur: "spor" }
@@ -216,7 +216,7 @@
     fati: {
       ad: "Fati", tur: "sade", renk: "#34436B", renk2: "#6476A3", desen: "kurt",
       etiket: "Kurucu",
-      sabah: 480, aksam: 1320, blokDk: 50, pano: true, sessiz: true,
+      sabah: 480, aksam: 1320, blokDk: 50, pano: true, sessiz: true, kendiDuzen: true,
       sabit: [], rutin: [], pencere: {}, donus: () => [], oku: [],
       cumleler: [
         "Ordu kuran önce kendini düzene sokar.",
@@ -314,6 +314,9 @@
     const p = P[slug]; if (!p) return [];
     const g = haftaGunu(gun), h = haftaNo(gun), liste = [];
     if (p.izin && p.izin.includes(g)) return [{ s: "10:00", b: "22:00", ad: "İzin günü · dinlen", tur: "izin", say: false }];
+    /* Kişisel düzen (Ayar → Günüm): kullanıcının kendi yazdığı gün; profildeki program yerine geçer. Yalnız telefonda/hesabında durur, depoya girmez. */
+    if (p.duzen) return (p.duzen[g] || []).map((x) => ({ s: x.s, b: x.b, ad: x.ad, tur: x.tur === "spor" ? "spor" : x.tur === "sabit" ? "is" : "mini", say: x.tur === "gorev" }))
+      .sort((a, b) => dk(a.s) - dk(b.s));
     for (const x of p.sabit) if (x.g.includes(g)) liste.push({ s: x.s, b: x.b, ad: x.ad, tur: x.tur, say: false });
 
     const denemeGunu = p.deneme && p.deneme.g === g && h >= p.deneme.ilk && (h - p.deneme.ilk) % p.deneme.her === 0;

@@ -25,7 +25,7 @@ function secim(slug, z, ozet) {
     const bl = PR.gunluk(slug, z.gun), say = bl.filter((b) => b.say).length;
     const izin = bl.some((b) => b.tur === "izin");
     const title = (p.tur === "yks" || p.tur === "karma") ? (PR.kalan(z.gun) || "Günaydın") : "Günaydın";
-    const body = izin ? "Bugün izin günün. Dinlen, yarın devam." : p.bSabah[n % p.bSabah.length] + (say ? " Bugün " + say + " blok." : "");
+    const body = izin ? "Bugün izin günün. Dinlen, yarın devam." : p.bSabah[n % p.bSabah.length] + (say && !p.kendiDuzen ? " Bugün " + say + " blok." : "");
     const m = { title, body, tag: "sabah" };
     if (p.tur === "yks" || p.tur === "karma") { const g = PR.gunNo(PR.SINAV) - n; m.rozet = g <= 0 ? 0 : g >= 7 ? Math.floor(g / 7) : g; }   // ikondaki sayı: kalan hafta
     out.push(m);

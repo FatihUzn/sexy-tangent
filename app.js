@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v19";
+  const SURUM = "st-v20";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -36,7 +36,7 @@
   /* ---------- durum ---------- */
   let slug = null, uid = null, V = null, yazZ = null;
   const anahtar = () => "st:" + slug;
-  function yukle() { try { V = JSON.parse(localStorage.getItem(anahtar()) || "null"); } catch (e) { V = null; } V = V || { isaret: {}, denemeler: [], _t: 0 }; V.isaret = V.isaret || {}; V.denemeler = V.denemeler || []; }
+  function yukle() { try { V = JSON.parse(localStorage.getItem(anahtar()) || "null"); } catch (e) { V = null; } V = V || { isaret: {}, denemeler: [], _t: 0 }; V.isaret = V.isaret || {}; V.denemeler = V.denemeler || []; if (P[slug]) P[slug].duzen = (P[slug].kendiDuzen && V.duzen) || null; }
   function kaydet() {
     V._t = Date.now();
     const g = bugun(), bl = PR.gunluk(slug, g).filter((b) => b.say);
@@ -53,7 +53,7 @@
     if (!sb || !uid) return;
     const { data, error } = await sb.from("st_veri").select("veri").eq("uid", uid).maybeSingle();
     if (error) { console.warn("eşitleme", error.message); return; }
-    if (data && data.veri && (data.veri._t || 0) > (V._t || 0)) { V = data.veri; V.isaret = V.isaret || {}; V.denemeler = V.denemeler || []; try { localStorage.setItem(anahtar(), JSON.stringify(V)); } catch (e) {} ciz(); }
+    if (data && data.veri && (data.veri._t || 0) > (V._t || 0)) { V = data.veri; V.isaret = V.isaret || {}; V.denemeler = V.denemeler || []; P[slug].duzen = (P[slug].kendiDuzen && V.duzen) || null; try { localStorage.setItem(anahtar(), JSON.stringify(V)); } catch (e) {} ciz(); }
     else if (V._t) esitleYaz();
   }
 
@@ -145,6 +145,7 @@
   }
   function uygAc() {
     goster("uyg"); ozel = null; mesajlar = []; mesajSon = 0; mKonu = null; cozulmus = {}; sonRozet = null;
+    $("duzenBtn").hidden = !P[slug].kendiDuzen;
     navCiz(); ciz(); esitleOku(); bildirimDurum(); mesajBasla();
     if (location.hash === "#mesaj") { history.replaceState(null, "", location.pathname); sekmeAc("mesaj"); }
     else if (!V.tanitim) setTimeout(tanitimAc, 400);
@@ -159,10 +160,12 @@
     const kurS = ["Bildirim ve kurulum", "Safari → Paylaş → <b>Ana Ekrana Ekle</b>, sonra uygulamayı oradan aç. <b>Ayar → Bildirimler</b>'i açarsan yeni mesaj gelince haber verir; kilit ekranında kimden geldiği ve ne yazdığı görünmez."];
     if (t === "sade") {
       l.push(["Bugün", "Günün işlerini yaz, bitirdikçe işaretle. Altta kurlar ve gündem."]);
+      l.push(["Günüm", "İstersen gününü saat saat yaz (<b>Ayar → Günüm</b>); o zaman Bugün'de \"şu an\" kartı ve liste çıkar."]);
       l.push(panoS, mesajS, kurS); return l;
     }
     if (t === "is") {
-      l.push(["Bugün", "Üstte şu an ne olduğu (dükkân, spor, gün sonu). Rutin işleri bitirince <b>✓</b>'ye bas. Kaçırdığın gün için ceza yok."]);
+      l.push(["Günüm", "Gününü sen kurarsın: her gün için saat saat ne var (dükkân, spor, toplantı, okuma) yaz. Tanıtım bitince ekranı açılır; sonra <b>Ayar → Günüm</b>'den değiştirirsin."]);
+      l.push(["Bugün", "Üstte şu an ne olduğu, altta günün listesi. \"Yapılacak\" türündekileri bitirince <b>✓</b>'ye bas. Kaçırdığın gün için ceza yok."]);
       l.push(["Bugünün işleri", "Sabah aklındaki işleri yaz (3 satır hazır, 8'e kadar), bitirdikçe işaretle."]);
       l.push(panoS);
       l.push(["Oku", "İş ve para üzerine kısa parçalar: tahsilat, pazarlık, ortaklık, şirket, banka. Her biri tek oturuşta biter."]);
@@ -190,7 +193,10 @@
     const l = tanitimSayfalari(); let i = 0;
     const d = el("div", "sayfa-alt tanitim"), k = el("div", "kart giris-kart");
     d.appendChild(k); document.body.appendChild(d);
-    const kapat = () => { d.remove(); if (!V.tanitim) { V.tanitim = 1; kaydet(); } };
+    const kapat = () => {
+      d.remove(); if (!V.tanitim) { V.tanitim = 1; kaydet(); }
+      if (P[slug].kendiDuzen && !V.duzen) { duzenAc("bugun"); tost("Şimdi gününü kur: saat saat ekle."); }   // ilk kurulum
+    };
     const ciz1 = () => {
       k.innerHTML = '<div class="nokta">' + l.map((_, j) => "<i" + (j === i ? ' class="on"' : "") + "></i>").join("") + "</div><h2>" + l[i][0] + '</h2><p class="metin">' + l[i][1] + "</p>";
       const b = el("button", "btn", i < l.length - 1 ? "Devam" : "Başlayalım"); b.onclick = () => { if (i < l.length - 1) { i++; ciz1(); } else kapat(); };
@@ -301,7 +307,7 @@
     plan3Ciz(g); sporBugunCiz(g);
     $("profilNot").hidden = !p.not; $("profilNot").textContent = p.not || "";
     kurMiniCiz();
-    const sade = p.tur === "sade";   // sade profilde program yok: şu an kartı, blok listesi ve seri gizli
+    const sade = p.tur === "sade" && !l.length;   // sade profilde, gün boşsa: şu an kartı, blok listesi ve seri gizli
     for (const id of ["simdi", "bloklar", "haftaIlerleme"]) $(id).hidden = sade;
     if (sade) { $("haftaOzet").hidden = true; return; }
 
@@ -1121,6 +1127,75 @@
   function mesajBasla() { clearInterval(mesajZ); mesajCek(); mesajZ = setInterval(() => { if (!document.hidden) mesajCek(); }, 30000); }
   document.addEventListener("visibilitychange", () => { if (!document.hidden && slug) mesajCek(); });
   if (navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", (e) => { if (e.data && e.data.ac === "mesaj" && slug) { mesajCek(); mKonu = null; sekmeAc("mesaj"); } });
+
+  /* ---------- Günüm: kullanıcı kendi gününü saat saat yazar (profilde kendiDuzen: true) ----------
+     V.duzen = { "1": [{ s:"08:30", b:"19:00", ad:"Dükkân", tur:"sabit" }], ... }   // 0 Pazar … 6 Cumartesi
+     tur: gorev (✓ ile işaretlenir) · sabit (dükkân, toplantı) · spor. Profildeki program yerine geçer. */
+  const GUN_TEKRAR = { hi: [1, 2, 3, 4, 5], pc: [1, 2, 3, 4, 5, 6], hs: [6, 0], her: [1, 2, 3, 4, 5, 6, 0] };
+  const TUR_AD = { gorev: "yapılacak", sabit: "sabit", spor: "spor" };
+  let duzenGun = null, duzenDuzelt = null, duzenDonus = "ayar";
+  function duzenUygula() { if (slug && P[slug]) P[slug].duzen = (P[slug].kendiDuzen && V && V.duzen) || null; }
+  function duzenVarsayilan() {   // profildeki (tahmini) programdan başlangıç düzeni
+    const d = {}, hb = haftaBasi(bugun()), eski = P[slug].duzen; P[slug].duzen = null;
+    for (let i = 0; i < 7; i++) {
+      const g = gunEkle(hb, i), w = PR.haftaGunu(g);
+      d[w] = PR.gunluk(slug, g).filter((b) => b.tur !== "izin").map((b) => ({ s: b.s, b: b.b, ad: b.ad, tur: b.tur === "spor" ? "spor" : b.say ? "gorev" : "sabit" }));
+    }
+    P[slug].duzen = eski; return d;
+  }
+  function duzenAc(donus) {
+    if (!V.duzen) { V.duzen = duzenVarsayilan(); kaydet(); duzenUygula(); }
+    duzenDonus = donus || "ayar"; duzenGun = duzenGun == null ? PR.haftaGunu(bugun()) : duzenGun; duzenDuzelt = null;
+    sekmeAc("duzen"); duzenCiz();
+  }
+  function duzenCiz() {
+    const gs = $("duzenGunler"); gs.innerHTML = "";
+    for (const g of [1, 2, 3, 4, 5, 6, 0]) {
+      const n = (V.duzen[g] || []).length, b = el("button", (g === duzenGun ? "on" : "") + (n ? " dolu" : ""), KISA[g] + (n ? "<i></i>" : ""));
+      b.type = "button"; b.onclick = () => { duzenGun = g; duzenDuzelt = null; duzenCiz(); }; gs.appendChild(b);
+    }
+    const l = (V.duzen[duzenGun] || []).slice().sort((a, b) => PR.dk(a.s) - PR.dk(b.s)), ol = $("duzenListe"); ol.innerHTML = "";
+    if (!l.length) ol.appendChild(el("li", "blok pasif", '<span class="ad"><b>' + GUNLER[duzenGun] + ' boş.</b><small>Aşağıdan ekle ya da bugünü boş bırak.</small></span>'));
+    for (const x of l) {
+      const li = el("li", "blok" + (x.tur === "gorev" ? "" : " pasif") + (duzenDuzelt === x ? " simdiki" : ""));
+      li.innerHTML = '<span class="sa">' + x.s + '</span><span class="ad"><b>' + kac(x.ad) + "</b><small>" + x.s + "–" + x.b + " · " + TUR_AD[x.tur] + "</small></span>";
+      const sil = el("button", "issil", "×"); sil.type = "button"; sil.setAttribute("aria-label", x.ad + " sil");
+      sil.onclick = (e) => { e.stopPropagation(); V.duzen[duzenGun] = V.duzen[duzenGun].filter((y) => y !== x); if (duzenDuzelt === x) duzenDuzelt = null; kaydet(); duzenUygula(); duzenCiz(); };
+      li.onclick = () => { duzenDuzelt = x; duzenCiz(); const f = $("duzenForm"); f.scrollIntoView({ behavior: "smooth", block: "center" }); };
+      li.appendChild(sil); ol.appendChild(li);
+    }
+    const f = $("duzenForm"), x = duzenDuzelt;
+    $("duzenFormBas").textContent = x ? "Düzelt · " + GUNLER[duzenGun] : "Ekle · " + GUNLER[duzenGun];
+    f.ad.value = x ? x.ad : ""; f.s.value = x ? x.s : ""; f.b.value = x ? x.b : ""; f.tur.value = x ? x.tur : "gorev";
+    f.tekrar.value = "gun"; f.tekrar.closest("label").hidden = !!x;
+    $("duzenKaydet").textContent = x ? "Kaydet" : "Ekle"; $("duzenIptal").hidden = !x; $("duzenHata").hidden = true;
+  }
+  $("duzenForm").onsubmit = (e) => {
+    e.preventDefault();
+    const f = $("duzenForm"), h = $("duzenHata"), ad = f.ad.value.trim(), s = f.s.value, b = f.b.value, tur = f.tur.value;
+    const hata = (m) => { h.textContent = m; h.hidden = false; };
+    if (!ad || !s || !b) return hata("Ad, başlangıç ve bitiş gerekli.");
+    if (PR.dk(b) <= PR.dk(s)) return hata("Bitiş saati başlangıçtan sonra olmalı (gece yarısını geçen bir şeyse 23:59'da bitir).");
+    const gunler = duzenDuzelt ? [duzenGun] : (GUN_TEKRAR[f.tekrar.value] || [duzenGun]);
+    let cakisan = 0;
+    for (const g of gunler) {
+      V.duzen[g] = (V.duzen[g] || []).filter((y) => y !== duzenDuzelt);
+      if (V.duzen[g].some((y) => PR.dk(y.s) < PR.dk(b) && PR.dk(s) < PR.dk(y.b) && !(y.s === s && y.ad === ad))) cakisan++;
+      if (!V.duzen[g].some((y) => y.s === s && y.ad === ad)) V.duzen[g].push({ s, b, ad, tur });
+    }
+    kaydet(); duzenUygula();
+    tost(duzenDuzelt ? "Düzeltildi." : gunler.length > 1 ? gunler.length + " güne eklendi." : "Eklendi." + (cakisan ? " Başka bir şeyle çakışıyor; olur, ikisi de görünür." : ""));
+    duzenDuzelt = null; duzenCiz(); bugunCiz(); haftaCiz();
+  };
+  $("duzenIptal").onclick = () => { duzenDuzelt = null; duzenCiz(); };
+  let sifirEmin = false;
+  $("duzenSifirla").onclick = () => {
+    if (!sifirEmin) { sifirEmin = true; $("duzenSifirla").textContent = "Emin misin? Yazdıkların silinir"; setTimeout(() => { sifirEmin = false; $("duzenSifirla").textContent = "Baştaki düzene dön"; }, 3000); return; }
+    sifirEmin = false; $("duzenSifirla").textContent = "Baştaki düzene dön";
+    V.duzen = duzenVarsayilan(); kaydet(); duzenUygula(); duzenCiz(); bugunCiz(); haftaCiz(); tost("Baştaki düzene dönüldü.");
+  };
+  $("duzenGeri").onclick = () => sekmeAc(duzenDonus);
+  $("duzenBtn").onclick = () => duzenAc("ayar");
 
   /* ---------- bildirim ---------- */
   const standalone = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;

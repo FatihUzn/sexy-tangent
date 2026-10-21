@@ -114,6 +114,17 @@ t("mesaj bildirimi: duvar herkese (yazan hariç), birebir yalnız alıcıya", ()
   assert.deepStrictEqual(M.alicilar({ kimden: "fati", kime: "yabanci" }), []);
 });
 
+t("kendi düzeni: profil programı yerine geçer, sabit/spor işaretlenmez", () => {
+  const P0 = PR.P.fikret; P0.duzen = { 4: [{ s: "09:00", b: "20:00", ad: "Dükkân", tur: "sabit" }, { s: "07:30", b: "07:45", ad: "Plan", tur: "gorev" }, { s: "21:00", b: "22:00", ad: "Salon", tur: "spor" }] };
+  const l = PR.gunluk("fikret", "2026-10-22");   // Perşembe
+  assert.deepStrictEqual(l.map((b) => b.ad), ["Plan", "Dükkân", "Salon"]);
+  assert.deepStrictEqual(l.map((b) => b.say), [true, false, false]);
+  assert.strictEqual(l[2].tur, "spor");
+  assert.deepStrictEqual(PR.gunluk("fikret", "2026-10-23"), []);   // Cuma boş
+  P0.duzen = null;
+  assert.ok(PR.gunluk("fikret", "2026-10-22").length > 0);       // düzen yoksa profil programı
+});
+
 (async () => {
   // uçtan uca şifreleme: iki kişi okur; üçüncü kişi ve yanlış şifre okuyamaz
   const S = require("../sifre.js");
