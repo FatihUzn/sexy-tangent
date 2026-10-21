@@ -1,4 +1,4 @@
-/* Karaambar Kamyoncular Derneği · profiller ve program üreteci.
+/* Bozkurt Ordusu · profiller ve program üreteci.
    Hem tarayıcıda (window.Profiller) hem sunucuda (require) çalışır.
    Burada yalnız program, tema ve cümleler var; kişisel veri (işaretler, netler) Supabase'de, sahibine kapalı. */
 (function (kok) {
@@ -169,6 +169,66 @@
       ]
     },
 
+    /* İş profili: program yok, dükkân saatleri sabit; Pano (kurlar, yapılacaklar, notlar) ve iş okumaları.
+       Kişisel bilgi (dükkânlar, kira, aile işi) koda yazılmaz: bu depo herkese açık. Dükkân saatleri tahmin, değiştirilebilir. */
+    fikret: {
+      ad: "Fikret", tur: "is", renk: "#7A5C1E", renk2: "#B08A3E", desen: "carsi",
+      etiket: "İş adamı",
+      sabah: 450, aksam: 1350, blokDk: 30, pano: true, kendiDuzen: true,
+      not: "Saatler tahmini; Ayar → Günüm'den kendi gününü saat saat yaz.",
+      sabit: [
+        { g: [1, 2, 3, 4, 5, 6], s: "08:30", b: "19:00", ad: "Dükkân", tur: "is" },
+        { g: [2, 4, 6], s: "20:00", b: "21:00", ad: "Spor", tur: "spor" }
+      ],
+      rutin: [
+        { g: her, s: "07:45", dk: 10, ad: "Günü planla" },
+        { g: [1, 2, 3, 4, 5, 6], s: "19:10", dk: 15, ad: "Gün sonu · kasa ve notlar" },
+        { g: her, s: "21:30", dk: 20, ad: "Okuma · 20 dk" }
+      ],
+      pencere: {},
+      donus: () => [],
+      oku: ["tahsilat", "pazarlik", "ortaklik", "sirket", "banka", "para"],
+      cumleler: [
+        "İşi büyüten, defterini her akşam kapatandır.",
+        "Çarşıda herkes satar; kazanan, sözünü tutandır.",
+        "Rakamı bilmeyen pazarlığı kaybeder. Bugün rakamına bak.",
+        "Müşteri bir kez gelir, güven ikinci kez getirir.",
+        "Erken gelen iyi yer tutar; çarşıda da hayatta da.",
+        "Büyük iş, küçük işi düzgün yapanlara gelir."
+      ],
+      bSabah: [
+        "Günaydın. Kepenk açılmadan önce günü bir planla.",
+        "Bugün tek bir şeyi düzelt: bir alacak, bir söz, bir rakam.",
+        "Çarşı uyanıyor. Sen ondan önce kalk.",
+        "Kahveni al, bugünün üç işini yaz.",
+        "Yeni gün, yeni müşteri. Yüzün güler olsun."
+      ],
+      bAksam: [
+        "Kepenk indi. Bugünü iki satırla not et.",
+        "Gün bitti. Yarının ilk işi ne?",
+        "Kasa kapandı, kafa da kapansın. İyi geceler.",
+        "Bugün bir şey öğrendiysen kâr ettin.",
+        "Yarın yine erkenden. İyi uykular."
+      ]
+    },
+
+    /* Kurucu: sade profil. Program yok; mesajlar, gündem, Pano. Günlük bildirim göndermez (275 zaten gönderiyor). */
+    fati: {
+      ad: "Fati", tur: "sade", renk: "#34436B", renk2: "#6476A3", desen: "kurt",
+      etiket: "Kurucu",
+      sabah: 480, aksam: 1320, blokDk: 50, pano: true, sessiz: true, kendiDuzen: true,
+      sabit: [], rutin: [], pencere: {}, donus: () => [], oku: [],
+      cumleler: [
+        "Ordu kuran önce kendini düzene sokar.",
+        "Sessiz çalış, sonucu konuşsun.",
+        "Bugün bir şey kur. Küçük de olsa.",
+        "Yolu yürüyen bilir; konuşan değil.",
+        "Sabır bir strateji değil ama her stratejinin yakıtı."
+      ],
+      bSabah: ["Günaydın.", "Bugün tek iş: başlamak.", "Kahve, plan, iş.", "Yeni gün."],
+      bAksam: ["Günü kapat.", "Yarın yine.", "İyi geceler.", "Bugün yeter."]
+    },
+
     samed: {
       ad: "Samed", tur: "uni", renk: "#5F7A3A", renk2: "#8EA866", desen: "zirve",
       etiket: "Yeniden inşa",
@@ -247,13 +307,16 @@
       ]
     }
   };
-  const SIRA = ["salih", "erhan", "samed", "taha"];
+  const SIRA = ["salih", "erhan", "samed", "taha", "fikret", "fati"];
 
   /* ---------- program üreteci ---------- */
   function gunluk(slug, gun) {
     const p = P[slug]; if (!p) return [];
     const g = haftaGunu(gun), h = haftaNo(gun), liste = [];
     if (p.izin && p.izin.includes(g)) return [{ s: "10:00", b: "22:00", ad: "İzin günü · dinlen", tur: "izin", say: false }];
+    /* Kişisel düzen (Ayar → Günüm): kullanıcının kendi yazdığı gün; profildeki program yerine geçer. Yalnız telefonda/hesabında durur, depoya girmez. */
+    if (p.duzen) return (p.duzen[g] || []).map((x) => ({ s: x.s, b: x.b, ad: x.ad, tur: x.tur === "spor" ? "spor" : x.tur === "sabit" ? "is" : "mini", say: x.tur === "gorev" }))
+      .sort((a, b) => dk(a.s) - dk(b.s));
     for (const x of p.sabit) if (x.g.includes(g)) liste.push({ s: x.s, b: x.b, ad: x.ad, tur: x.tur, say: false });
 
     const denemeGunu = p.deneme && p.deneme.g === g && h >= p.deneme.ilk && (h - p.deneme.ilk) % p.deneme.her === 0;

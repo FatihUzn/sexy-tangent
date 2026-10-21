@@ -1,4 +1,4 @@
-/* Karaambar Kamyoncular Derneği · anlık bildirim gönderici. Supabase'deki zamanlayıcı 5 dakikada bir çağırır (x-sifre başlığıyla).
+/* Bozkurt Ordusu · anlık bildirim gönderici. Supabase'deki zamanlayıcı 5 dakikada bir çağırır (x-sifre başlığıyla).
    Her profile günde iki bildirim: sabah ve gün sonu (saatler profiller.js'te).
    Gizlilik: kilit ekranında okunur; sınav, ders, okul ya da bölüm adı hiçbir zaman yazmaz.
    Tek ortam değişkeni (Vercel → Settings → Environment Variables):
@@ -19,13 +19,13 @@ function simdiTR(ms) {
 
 /* Bu 5 dakikalık dilimde bu profile ne gidecek? Saf işlev: test edilir. */
 function secim(slug, z, ozet) {
-  const p = PR.P[slug]; if (!p) return [];
+  const p = PR.P[slug]; if (!p || p.sessiz) return [];   // sessiz profil günlük bildirim almaz (mesaj bildirimi ayrı)
   const n = PR.gunNo(z.gun), out = [];
   if (z.dilim === p.sabah) {
     const bl = PR.gunluk(slug, z.gun), say = bl.filter((b) => b.say).length;
     const izin = bl.some((b) => b.tur === "izin");
     const title = (p.tur === "yks" || p.tur === "karma") ? (PR.kalan(z.gun) || "Günaydın") : "Günaydın";
-    const body = izin ? "Bugün izin günün. Dinlen, yarın devam." : p.bSabah[n % p.bSabah.length] + (say ? " Bugün " + say + " blok." : "");
+    const body = izin ? "Bugün izin günün. Dinlen, yarın devam." : p.bSabah[n % p.bSabah.length] + (say && !p.kendiDuzen ? " Bugün " + say + " blok." : "");
     const m = { title, body, tag: "sabah" };
     if (p.tur === "yks" || p.tur === "karma") { const g = PR.gunNo(PR.SINAV) - n; m.rozet = g <= 0 ? 0 : g >= 7 ? Math.floor(g / 7) : g; }   // ikondaki sayı: kalan hafta
     out.push(m);
@@ -67,7 +67,7 @@ module.exports = async (req, res) => {
     webpush.setVapidDetails("https://" + (req.headers.host || "localhost"), veri.vapid.acik, veri.vapid.ozel);
     let ok = 0, dusen = 0, mesaj = 0;
     for (const a of veri.aboneler || []) {
-      const liste = govde && govde.deneme ? [{ title: "Karaambar", body: "Bildirim hattı çalışıyor.", tag: "deneme" }] : secim(a.slug, z, ozet[a.slug]);
+      const liste = govde && govde.deneme ? [{ title: "Bozkurt Ordusu", body: "Bildirim hattı çalışıyor.", tag: "deneme" }] : secim(a.slug, z, ozet[a.slug]);
       for (const m of liste) {
         mesaj++;
         try { await webpush.sendNotification(a.abone, JSON.stringify(m), { TTL: 900, urgency: "high" }); ok++; }
