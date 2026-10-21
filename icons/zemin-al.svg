@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 860" preserveAspectRatio="xMidYMid slice">
+<defs>
+  <linearGradient id="zg" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#C8101C"/><stop offset=".55" stop-color="#A50C16"/><stop offset="1" stop-color="#6E060D"/></linearGradient>
+  <filter id="yum" x="-20%" y="-5%" width="140%" height="110%"><feGaussianBlur stdDeviation="14"/></filter>
+  <filter id="ipek" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".7 .012" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .035 0"/></filter>
+  <filter id="dalga" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".005 .0025" numOctaves="1" seed="9" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="22" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <radialGradient id="isik" cx=".75" cy=".08" r=".7"><stop offset="0" stop-color="#FFB089" stop-opacity=".35"/><stop offset="1" stop-color="#FFB089" stop-opacity="0"/></radialGradient>
+  <radialGradient id="kenar" cx=".5" cy=".45" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></radialGradient>
+</defs>
+<rect width="420" height="860" fill="url(#zg)"/>
+<g opacity=".95"><g transform="translate(210 250) scale(0.62)">
+  <mask id="am"><rect x="-300" y="-300" width="600" height="700" fill="#fff"/><circle cx="0" cy="50" r="160" fill="#000"/></mask>
+  <circle cx="0" cy="0" r="200" fill="#F6EFE6" mask="url(#am)"/>
+  <polygon fill="#F6EFE6" points="0.00,58.33 22.45,127.43 95.11,127.43 36.33,170.14 58.78,239.24 0.00,196.53 -58.78,239.24 -36.33,170.14 -95.11,127.43 -22.45,127.43"/>
+</g></g>
+<path d="M-40 -20 C-68 300 -12 600 -54 870 L-12 870 C30 600 -26 300 2 -20 Z" fill="#FFD9C9" opacity="0.09" filter="url(#yum)"/><path d="M-4 -20 C-39 300 31 600 -22 870 L22 870 C75 600 4 300 39 -20 Z" fill="#FFD9C9" opacity="0.08" filter="url(#yum)"/><path d="M32 -20 C-1 300 64 600 15 870 L46 870 C95 600 30 300 62 -20 Z" fill="#000" opacity="0.18" filter="url(#yum)"/><path d="M52 -20 C62 300 42 600 57 870 L94 870 C79 600 100 300 89 -20 Z" fill="#000" opacity="0.29" filter="url(#yum)"/><path d="M82 -20 C46 300 118 600 64 870 L133 870 C187 600 115 300 151 -20 Z" fill="#FFD9C9" opacity="0.10" filter="url(#yum)"/><path d="M128 -20 C113 300 144 600 121 870 L154 870 C176 600 146 300 161 -20 Z" fill="#FFD9C9" opacity="0.10" filter="url(#yum)"/><path d="M158 -20 C147 300 168 600 152 870 L207 870 C223 600 202 300 212 -20 Z" fill="#FFD9C9" opacity="0.08" filter="url(#yum)"/><path d="M192 -20 C207 300 178 600 199 870 L236 870 C214 600 243 300 229 -20 Z" fill="#FFD9C9" opacity="0.07" filter="url(#yum)"/><path d="M225 -20 C209 300 241 600 217 870 L264 870 C288 600 256 300 272 -20 Z" fill="#000" opacity="0.26" filter="url(#yum)"/><path d="M259 -20 C261 300 257 600 260 870 L312 870 C309 600 313 300 311 -20 Z" fill="#000" opacity="0.28" filter="url(#yum)"/><path d="M298 -20 C267 300 328 600 282 870 L351 870 C397 600 336 300 367 -20 Z" fill="#000" opacity="0.18" filter="url(#yum)"/><path d="M344 -20 C307 300 381 600 326 870 L374 870 C430 600 356 300 393 -20 Z" fill="#000" opacity="0.23" filter="url(#yum)"/><path d="M387 -20 C372 300 402 600 380 870 L445 870 C467 600 437 300 452 -20 Z" fill="#000" opacity="0.24" filter="url(#yum)"/><path d="M445 -20 C472 300 418 600 459 870 L506 870 C465 600 519 300 492 -20 Z" fill="#000" opacity="0.29" filter="url(#yum)"/>
+
+<rect width="420" height="860" filter="url(#ipek)"/>
+<rect width="420" height="860" fill="url(#isik)"/>
+<rect width="420" height="860" fill="url(#kenar)"/>
+</svg>
