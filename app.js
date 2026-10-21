@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v15";
+  const SURUM = "st-v16";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -147,7 +147,7 @@
     const p = P[slug], t = p.tur, l = [];
     l.push(["Hoş geldin " + p.ad, "Burası senin sayfan. Sadece sen görürsün: işaretlerin ve notların senin hesabında durur, başka profiller açamaz."]);
     l.push(["Bugün", "Üstteki kart şu an ne yapman gerektiğini söyler. Bir bloğu bitirince <b>✓ bitti</b>'ye bas ya da listedeki kutuyu işaretle. Kaçırdığın gün için ceza yok; haftalık çubuk sadece gösterir."]);
-    if (p.plan3) l.push(["Bugünün 3 işi", "Sabah gün planında üç iş yaz, bitirdikçe işaretle. Üçü de bitince gün kazanılmıştır."]);
+    if (p.plan3) l.push(["Bugünün işleri", "Sabah gün planında işlerini yaz (3 satır hazır, '+ İş ekle' ile 8'e kadar), bitirdikçe işaretle. Hepsi bitince gün kazanılmıştır."]);
     l.push(["Hafta", "Haftanın tamamını tek ekranda görürsün: hangi gün ne var, kaçını bitirdin."]);
     if (t === "yks" || t === "karma") {
       l.push(["Netler", "Her denemeden sonra <b>+ Deneme ekle</b> ile netlerini gir. Hedefle yan yana görürsün; en çok açık olan ders kırmızı yanar."]);
@@ -278,20 +278,41 @@
   }
   function sure(d) { return d < 60 ? d + " dk" : Math.floor(d / 60) + " sa" + (d % 60 ? " " + (d % 60) + " dk" : ""); }
 
-  /* Günün 3 işi: sabah yazılır, gün içinde işaretlenir */
+  /* Günün işleri: sabah yazılır, gün içinde işaretlenir. Varsayılan 3; "+ İş ekle" ile en çok 8. */
+  const IS_EN_AZ = 3, IS_EN_COK = 8;
   function plan3Ciz(g) {
     const k = $("plan3"); if (!P[slug].plan3) { k.hidden = true; return; }
     k.hidden = false; V.plan = V.plan || {};
-    const l = V.plan[g] || [{ t: "", ok: 0 }, { t: "", ok: 0 }, { t: "", ok: 0 }];
-    k.innerHTML = '<span class="etk">Bugünün 3 işi</span>';
+    const l = (V.plan[g] || []).slice();
+    while (l.length < IS_EN_AZ) l.push({ t: "", ok: 0 });
+    const dolu = l.filter((y) => y.t), biten = dolu.filter((y) => y.ok).length;
+    k.innerHTML = '<span class="etk">Bugünün işleri' + (dolu.length ? " · " + biten + "/" + dolu.length : "") + "</span>";
+    const sakla = () => { V.plan[g] = l; kaydet(); };
     l.forEach((x, i) => {
       const r = el("label"), t = el("button", "tik" + (x.ok ? " on" : ""), "✓"), inp = el("input");
       t.type = "button"; t.setAttribute("aria-label", (i + 1) + ". iş bitti mi");
       inp.type = "text"; inp.value = x.t; inp.placeholder = (i + 1) + ". iş"; inp.maxLength = 80;
-      t.onclick = () => { if (!l[i].t) return; l[i].ok = l[i].ok ? 0 : 1; V.plan[g] = l; kaydet(); plan3Ciz(g); if (l.every((y) => y.ok)) tost("Üçü de tamam. Bugün kazandın."); };
-      inp.onchange = () => { l[i].t = inp.value.trim(); V.plan[g] = l; kaydet(); };
-      r.append(t, inp); k.appendChild(r);
+      t.onclick = () => {
+        if (!l[i].t) return; l[i].ok = l[i].ok ? 0 : 1; sakla(); plan3Ciz(g);
+        const d = l.filter((y) => y.t); if (l[i].ok && d.every((y) => y.ok)) tost(d.length > 1 ? "Hepsi tamam. Bugün kazandın." : "Tamam.");
+      };
+      inp.onchange = () => {   // yeniden çizme: bir sonraki kutuya geçerken klavye kapanmasın
+        l[i].t = inp.value.trim(); if (!l[i].t) { l[i].ok = 0; t.classList.remove("on"); } sakla();
+        const d = l.filter((y) => y.t); k.querySelector(".etk").textContent = "Bugünün işleri" + (d.length ? " · " + d.filter((y) => y.ok).length + "/" + d.length : "");
+      };
+      r.append(t, inp);
+      if (i >= IS_EN_AZ) {   // sonradan eklenen satır silinebilir
+        const s2 = el("button", "issil", "×"); s2.type = "button"; s2.setAttribute("aria-label", (i + 1) + ". işi sil");
+        s2.onclick = (e) => { e.preventDefault(); l.splice(i, 1); sakla(); plan3Ciz(g); };
+        r.appendChild(s2);
+      }
+      k.appendChild(r);
     });
+    if (l.length < IS_EN_COK) {
+      const ekle = el("button", "isekle", "+ İş ekle"); ekle.type = "button";
+      ekle.onclick = () => { l.push({ t: "", ok: 0 }); sakla(); plan3Ciz(g); const s3 = k.querySelectorAll("input"); if (s3.length) s3[s3.length - 1].focus(); };
+      k.appendChild(ekle);
+    }
   }
 
   function haftaCiz() {
