@@ -267,7 +267,7 @@
       },
       sabah: 360, aksam: 1335, blokDk: 50, plan3: true,
       ingilizce: true,
-      not: "2. aşama: İngilizce başladı. Hedef Erasmus için B2 (sınavda en az 75/100). Plan ve kaynaklar Kitaplık'ta. Maratona kadar koşular hafif.",
+      not: "2. aşama: İngilizce başladı. Hedef 2027–28 Erasmus: Eylül–Ekim 2027 sınavında en az 75. Plan ve kaynaklar Kitaplık'ta. Maratona kadar koşular hafif.",
       sabit: [   // ders programı (Ekim 2026). Ders adları bilerek yazılmadı: depo herkese açık.
         { g: [1], s: "09:40", b: "14:35", ad: "Okul", tur: "ders" },
         { g: [2], s: "12:05", b: "14:35", ad: "Okul", tur: "ders" },
@@ -280,7 +280,7 @@
         { g: her, s: "06:10", dk: 30, ad: "Koşu · 30 dk hafif" },
         { g: her, s: "07:45", dk: 15, ad: "Günü planla" },
         { g: her, s: "08:00", dk: 60, ad: "İngilizce · 60 dk (yeni konu + kelime)" },
-        { g: [1, 2, 3, 4, 5], s: "19:30", dk: 30, ad: "İngilizce tekrar · Anki + dinleme" },
+        { g: [1, 2, 3, 4, 5], s: "19:30", dk: 60, ad: "İngilizce · 2. oturum (Anki + okuma)" },
         { g: her, s: "21:00", dk: 30, ad: "Okuma / dinleme · 30 dk" }
       ],
       pencere: {},
