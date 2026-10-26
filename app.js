@@ -3,7 +3,7 @@
    satır güvenliği yüzünden herkes yalnız kendi satırını görür. */
 (function () {
   "use strict";
-  const SURUM = "st-v21";
+  const SURUM = "st-v22";
   const SB_URL = "https://pqzjayxdrnpokyffyole.supabase.co";
   const SB_ANAHTAR = "sb_publishable_ViJ3hRKsZVHcDpVVUA3BOw_ZOZbDMRD";
   const ALAN = "@sexy-tangent.app";
@@ -441,6 +441,7 @@
       t.onclick = () => { if (V.kitap[x[0]]) delete V.kitap[x[0]]; else { V.kitap[x[0]] = bugun(); tost("Bir kitap daha. Helal."); } kaydet(); kitapCiz(); };
       d.appendChild(t); k.appendChild(d);
     });
+    if (p.ingilizce) { const a = el("a", "raf ingraf", "<b>İngilizce</b><span>Sıfırdan B2'ye: haftalık plan, ücretsiz kaynaklar, Erasmus sınavı</span>"); a.href = "oku/ingilizce.html"; k.prepend(a); }
     k.appendChild(el("div", "kart", '<b>Ders içeriklerin</b><p class="ince">Derslerini gönderince konu anlatımları burada olacak.</p>'));
   }
 
