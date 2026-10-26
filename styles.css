@@ -623,3 +623,5 @@ html[data-tema="al"] .avatar,html[data-tema="gok"] .avatar{border:1.5px solid #F
 html[data-tema="al"] .zarf,html[data-tema="gok"] .zarf{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.5);color:#FFF8EF}
 .secim{grid-template-columns:repeat(3,1fr)}
 .kaynak-not{font-size:11.5px;color:var(--soluk);text-align:center;margin:4px 0 0}
+
+.ingraf{margin-bottom:12px;min-height:0}
